@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import host from "../constants/host";
 
+import FormatTime from "../functions/FormatTime";
+
 export default function MakeNewModal({ 
     isModalVisible, 
     setModalVisible, 
@@ -31,9 +33,9 @@ export default function MakeNewModal({
     const submitForm = async () => {
         setErrorState("primary");
 
-        console.log(form)
-        
-        const response = await fetch(`${host}/api/sendItem/add`, {
+        const mod = isOpened ? "update" : "add";
+
+        const response = await fetch(`${host}/api/sendItem/${mod}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -47,10 +49,33 @@ export default function MakeNewModal({
 
         if(data.success) {
             setModalVisible(false);
-            const newItem = { name: data.name, date: data.date, group: data.group, count: data.count, _id: data._id }
-            // append new item to rows and origData (for searching)
-            setRows(prevState => [...prevState, newItem])
-            setOrigData(prevState => [...prevState, newItem])
+            if(!isOpened) {
+                // Append new Item to states
+                const formattedDate = FormatTime(data.date, false);
+                const newItem = { name: data.name, date: formattedDate, group: data.group, count: data.count, _id: data._id }
+                // append new item to rows and origData (for searching)
+                setRows(prevState => [...prevState, newItem])
+                setOrigData(prevState => [...prevState, newItem])
+            } else {
+                // modify item in rows and origData
+                console.log(form)
+
+                // convert time to DD.MM.YYYY format
+                const formattedDate = FormatTime(form.date, false);
+                const updatedItem = form;
+                updatedItem.date = formattedDate;
+                
+                const index = origData.findIndex(item => item._id === updatedItem._id);
+                setRows(prevState => {
+                    prevState[index] = updatedItem;
+                    return [...prevState]
+                })
+                setOrigData(prevState => {
+                    prevState[index] = updatedItem;
+                    return [...prevState]
+                })
+            }
+         
             setIsLoading(false);
         } else {
             console.log(data.error);

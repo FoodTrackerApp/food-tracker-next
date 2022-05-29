@@ -1,7 +1,6 @@
-import { Table, Container, Tooltip, useAsyncList, useCollator } from "@nextui-org/react";
+import { Table, Container, Tooltip } from "@nextui-org/react";
 
 export default function ItemTable({ rows, columns, origData, setForm, setModal, setIsOpened }) {
-  const collator = useCollator({ numeric: true });
   const renderCell = (item, key) => {
     const cellValue = item[key];
 
@@ -23,20 +22,6 @@ export default function ItemTable({ rows, columns, origData, setForm, setModal, 
     }
   }
 
-  async function sort({ items, sortDescriptor }) {
-    return {
-      items: items.sort((a, b) => {
-        let first = a[sortDescriptor.column];
-        let second = b[sortDescriptor.column];
-        let cmp = collator.compare(first, second);
-        if(sortDescriptor.direction === "descening") {
-          cmp *= -1;
-        }
-        return cmp;
-      }),
-    };
-  }
-
   const handleSelect = (key) => {
     const selectedEle = rows.find(item => item._id == key);
 
@@ -46,22 +31,18 @@ export default function ItemTable({ rows, columns, origData, setForm, setModal, 
     setModal(true)
   }
 
-  const list = useAsyncList({ rows, sort });
-
   return (
   <Container>
       <Table 
         aria-label='Example table with dynamic content'
         selectionMode="single"
         selectionBehavior="replace"
-        sortDescriptor={list.sortDescriptor}
-        onSortChange={list.sort}
         color="success"
         onRowAction={(key) => handleSelect(key)}
       >
         <Table.Header columns={columns}>
           {(column) => (
-            <Table.Column key={column.key} allowsSorting={column.key == "count" ? true : false} >{column.label}</Table.Column>
+            <Table.Column key={column.key} >{column.label}</Table.Column>
           )}
         </Table.Header>
         <Table.Body items={rows}>
