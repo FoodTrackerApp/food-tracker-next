@@ -45,8 +45,6 @@ export default function MakeNewModal({
 
         const data = await response.json();
 
-        console.log(data);
-
         if(data.success) {
             setModalVisible(false);
             if(!isOpened) {
@@ -58,13 +56,12 @@ export default function MakeNewModal({
                 setOrigData(prevState => [...prevState, newItem])
             } else {
                 // modify item in rows and origData
-                console.log(form)
 
                 // convert time to DD.MM.YYYY format
                 const formattedDate = FormatTime(form.date, false);
                 const updatedItem = form;
                 updatedItem.date = formattedDate;
-                
+
                 const index = origData.findIndex(item => item._id === updatedItem._id);
                 setRows(prevState => {
                     prevState[index] = updatedItem;
