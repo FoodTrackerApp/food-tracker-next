@@ -5,6 +5,7 @@ import { useState } from "react";
 import host from "../constants/host";
 
 import FormatTime from "../functions/FormatTime";
+import FormatTime2 from "../functions/FormatTime2";
 
 export default function MakeNewModal({ 
     isModalVisible, 
@@ -124,7 +125,7 @@ export default function MakeNewModal({
     <Spacer  y={.25} />
     <Input onChange={(e) => textHandler(e, "count")} underlined clearable labelPlaceholder='Count' type="number" id="count" initialValue={form.count} />
     <Spacer  y={.25} />
-    <Input onChange={(e) => textHandler(e, "date")} underlined clearable label='Date' type="date" initialValue={form.date} />
+    <Input onChange={(e) => textHandler(e, "date")} underlined clearable label='Date' type="date" initialValue={FormatTime2(form.date)} />
     <Spacer  y={.25} />
     <Input onChange={(e) => textHandler(e, "group")} underlined clearable labelPlaceholder='Place' initialValue={form.group} />
     <Spacer />
