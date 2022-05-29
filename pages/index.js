@@ -46,6 +46,7 @@ const Home = ({ data }) => {
         <title>FoodTracker</title>
         <meta name="description" content="FoodTracker" />
         <link rel="icon" href="/favicon.ico" />
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
       </Head>
       <Container>
         <Container>
