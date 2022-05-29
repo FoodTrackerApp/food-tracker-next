@@ -67,7 +67,7 @@ const Home = ({ data }) => {
     <Card>
       <span>Next due</span>
       <h2>{nextDue.name}</h2>
-      <Tooltip content="11.02.2022" placement="bottom" color="success">
+      <Tooltip content={nextDue.date} placement="bottom" color="success">
           {getTimeDiffInDays(nextDue.date)}
       </Tooltip>
     </Card>
@@ -122,13 +122,13 @@ const Home = ({ data }) => {
 
         </Grid.Container>
 
-        <TableSection 
-          setForm={setForm} setModal={setIsModalVisible} 
-          data={origData} rows={rows} 
-          setRows={setRows} setIsOpened={setIsOpened}
-        />
-
       </Container>
+
+      <TableSection 
+        setForm={setForm} setModal={setIsModalVisible} 
+        data={origData} rows={rows} 
+        setRows={setRows} setIsOpened={setIsOpened}
+      />
 
     </div>
   )

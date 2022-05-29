@@ -1,6 +1,6 @@
 import ItemTable from "./ItemTable"
 
-import { Input, Container } from "@nextui-org/react";
+import { Input, Container, Spacer, Grid} from "@nextui-org/react";
 
 import { useState, useEffect} from "react"
 
@@ -35,11 +35,13 @@ export default function TableSection({ data, rows, setRows, setForm, setModal, s
 
     return (
     <>
-    <Container>
-        <Input clearable bordered 
-            labelPlaceholder='Search' onChange={(e) => setSearchTerm(e.target.value)} />
-    </Container>
-
+    <Spacer />
+    <Grid.Container justify="center">
+      <Grid>
+        <Input clearable bordered labelPlaceholder='Search' onChange={(e) => setSearchTerm(e.target.value)} />
+      </Grid>
+    </Grid.Container>
+      
     <ItemTable 
         setIsOpened={setIsOpened} setForm={setForm} 
         setModal={setModal} origData={data} 
