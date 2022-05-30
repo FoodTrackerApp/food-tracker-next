@@ -66,7 +66,7 @@ export default function ItemTable({ rows, columns,
   // reload list when rows change
   useEffect(() => {
     list.reload();
-  }, [rows, list])
+  }, [rows])
 
   return (
   <Container>
