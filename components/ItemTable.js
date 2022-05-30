@@ -46,7 +46,7 @@ export default function ItemTable({ rows, columns,
   // reload list when rows change
   useEffect(() => {
     list.reload();
-  }, [rows])
+  }, [rows, list])
 
   // Sorting stuff
   const collator = useCollator({numeric: true});
