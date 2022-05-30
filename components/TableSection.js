@@ -1,10 +1,9 @@
 import ItemTable from "./ItemTable"
-
 import { Input, Container, Spacer, Grid} from "@nextui-org/react";
-
 import { useState, useEffect} from "react"
 
-export default function TableSection({ data, rows, setRows, setForm, setModal, setIsOpened }) {
+export default function TableSection({ data, rows, 
+  setRows, setForm, setModal, setIsOpened }) {
     const [searchTerm, setSearchTerm] = useState("")
 
     const columns = [
@@ -38,7 +37,13 @@ export default function TableSection({ data, rows, setRows, setForm, setModal, s
     <Spacer />
     <Grid.Container justify="center">
       <Grid>
-        <Input clearable bordered labelPlaceholder='Search' onChange={(e) => setSearchTerm(e.target.value)} />
+        <Input 
+          clearable
+          bordered 
+          labelPlaceholder='Search' 
+          onChange={(e) => setSearchTerm(e.target.value)} 
+          searchTerm={searchTerm}
+         />
       </Grid>
     </Grid.Container>
       
