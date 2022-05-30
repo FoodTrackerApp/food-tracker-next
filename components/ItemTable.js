@@ -43,10 +43,6 @@ export default function ItemTable({ rows, columns,
     } else { return { items: rows } }
   }
 
-  // reload list when rows change
-  useEffect(() => {
-    list.reload();
-  }, [rows, list])
 
   // Sorting stuff
   const collator = useCollator({numeric: true});
@@ -66,6 +62,11 @@ export default function ItemTable({ rows, columns,
   }
 
   const list = useAsyncList({load, sort});
+
+  // reload list when rows change
+  useEffect(() => {
+    list.reload();
+  }, [rows, list])
 
   return (
   <Container>
