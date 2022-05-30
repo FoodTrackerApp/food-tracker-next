@@ -134,10 +134,8 @@ const Home = ({ data }) => {
   )
 }
 
-
-
 export async function getServerSideProps() {
-  const res = await fetch(`${host}/api/getItems/none/none`);
+  const res = await fetch(`${host}/api/get`);
   const data = await res.json();
 
   const dateMonth = (date) => {
@@ -158,7 +156,7 @@ export async function getServerSideProps() {
     element.date = `${dateDay(date)}.${dateMonth(date)}.${date.getFullYear()}`
   });
 
-  return {props: {data}};
+  return { props: {data} };
 }
 
 export default Home;
