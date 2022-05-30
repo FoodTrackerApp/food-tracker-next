@@ -35,7 +35,6 @@ export default function ItemTable({ rows, columns,
   }
 
   async function load({ signal, searchTerm }) {
-    console.log("Search:", searchTerm)
     if(searchTerm) {
       return {
         items: rows.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -80,7 +79,6 @@ export default function ItemTable({ rows, columns,
       onSort={list.sort}
       onSortChange={list.sort}
     >
-    {console.log(list)}
       <Table.Header columns={columns}>
         {(column) => (
           <Table.Column key={column.key} allowsSorting >{column.label}</Table.Column>
