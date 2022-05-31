@@ -2,34 +2,30 @@ import Head from 'next/head'
 import { Container, Card, Tooltip, Button, Grid, Spacer} from "@nextui-org/react";
 import { FaQrcode, FaPlusSquare } from "react-icons/fa";
 import { useState, useEffect } from "react";
-
 import TableSection from '../components/TableSection.js';
 import MakeNewModal from '../components/MakeNewModal.js';
-
 import host from '../constants/host.js';
-
 import CalculateNextDue from '../functions/CalculateNextDue.js';
 
 const Home = ({ data }) => {
   // only use data for this, use OrigData from now on
-  const [origData, setOrigData] = useState(data)
-
+  const [origData, setOrigData] = useState(data);
   const [nextDue, setNextDue] = useState(CalculateNextDue(origData));
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  const [rows, setRows] = useState(origData)
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [rows, setRows] = useState(origData);
   const [form, setForm] = useState({name: "", count: "", date: "", group: ""});
   const [isOpened, setIsOpened] = useState(false);
 
   const getTimeDiffInDays = (date) => {
-    const now = new Date().getTime()
+    const now = new Date().getTime();
 
     // convert date to YYYY-MM-DD
-    const dateString = date.split(".")
-    date = new Date(dateString[2], dateString[1]-1, dateString[0])
+    const dateString = date.split(".");
+    date = new Date(dateString[2], dateString[1]-1, dateString[0]);
 
-    const dueDate = new Date(date).getTime()
-    const timeDiff = dueDate - now
-    const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24))
+    const dueDate = new Date(date).getTime();
+    const timeDiff = dueDate - now;
+    const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
     if(diffDays > 0) {
       return (
         <Button flat color="success">
@@ -60,7 +56,7 @@ const Home = ({ data }) => {
   // Refresh next due data on origData change
   useEffect(() => {
     setNextDue(CalculateNextDue(origData));
-  }, [setNextDue, origData])
+  }, [setNextDue, origData]);
 
   const renderNextDue = data.length > 0 ? (
     <Grid>
@@ -129,7 +125,6 @@ const Home = ({ data }) => {
         data={origData} rows={rows} 
         setRows={setRows} setIsOpened={setIsOpened}
       />
-
     </div>
   )
 }
@@ -152,7 +147,7 @@ export async function getServerSideProps() {
   
   // Map Date to DD.MM.YYYY
   data.forEach(element => {
-    let date = new Date(element.date)
+    let date = new Date(element.date);
     element.date = `${dateDay(date)}.${dateMonth(date)}.${date.getFullYear()}`
   });
 

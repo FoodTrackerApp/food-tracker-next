@@ -1,18 +1,14 @@
-
 import FormatTime from "./FormatTime";
 
 export default function CalculateNextDue(arr) {
-
     // Initial is first item in array
     let nextDue = arr[0], nextDueTime = FormatTime(nextDue.date);
-
     arr.forEach(item => {
         const date = FormatTime(item.date);
         if(date.getTime() < nextDueTime) {
             nextDue = item;
             nextDueTime = date.getTime();
         }
-    })
-
+    });
     return nextDue;
 }

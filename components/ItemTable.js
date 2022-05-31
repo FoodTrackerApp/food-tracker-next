@@ -1,8 +1,8 @@
 import { Table, Container, Tooltip, useAsyncList, useCollator } from "@nextui-org/react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 export default function ItemTable({ rows, columns, 
-  origData, setForm, setModal, setIsOpened, searchTerm }) {
+  setForm, setModal, setIsOpened }) {
 
   const renderCell = (item, key) => {
     const cellValue = item[key];
@@ -33,7 +33,7 @@ export default function ItemTable({ rows, columns,
     setModal(true)
   }
 
-  async function load({ signal, searchTerm }) {
+  async function load({ searchTerm }) {
     if(searchTerm) {
       return {
         items: rows.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))

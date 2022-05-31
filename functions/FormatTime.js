@@ -1,6 +1,3 @@
-
-
-
 // takes time in DD.MM.YYYY or YYYY-MM-DD format and returns Date Object
 export default function FormatTime(date, direction=true) {
     let newDate
