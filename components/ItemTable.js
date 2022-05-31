@@ -6,7 +6,6 @@ export default function ItemTable({ rows, columns,
 
   const renderCell = (item, key) => {
     const cellValue = item[key];
-
     switch(key) {
       case "name":
         return (
@@ -42,6 +41,12 @@ export default function ItemTable({ rows, columns,
     } else { return { items: rows } }
   }
 
+  const convertDateToTime = (date) => {
+    // tage date string in DD.MM.YYYY format
+    // return time string in ms from 1970
+    const dateString = date.split(".")
+    return new Date(dateString[2], dateString[1]-1, dateString[0]).getTime();
+  }
 
   // Sorting stuff
   const collator = useCollator({numeric: true});
@@ -51,13 +56,20 @@ export default function ItemTable({ rows, columns,
       items: items.sort((a, b) => {
         let first = a[sortDescriptor.column];
         let second = b[sortDescriptor.column];
+
+        if(sortDescriptor.column === "date"){
+          first = convertDateToTime(first);
+          second = convertDateToTime(second);
+        } 
+
         let cmp = collator.compare(first, second);
         if (sortDescriptor.direction === "descending") {
           cmp *= -1;
         }
+
         return cmp;
       }),
-    };
+    }
   }
 
   const list = useAsyncList({load, sort});
