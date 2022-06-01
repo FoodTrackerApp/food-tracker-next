@@ -10,9 +10,15 @@ export default async function handler(req, res) {
     }
 
     if(req.method === "GET") {
-        
+        let data;
+        try {
+            data = await retrieveHandle();
+        } catch(e) {
+            console.error("could not retrieve data",e);
+            data =[];
+        }
         // put in info in database API
-        let data = await retrieveHandle();
+        
         console.log("Sending data:", data);
 
         if(data.length === 0) {
