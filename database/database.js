@@ -6,8 +6,10 @@ db.items = new Datastore({ filename: `${host}/items.db`, autoload: true});
 db.items.loadDatabase();
 
 const retrieveAll = () => {
+    console.log("Database handler request");
     return new Promise((resolve, reject) => {
         db.items.find({}, function(err, docs) {
+            console.log("database handler got items", docs)
             if(!err) {
                 resolve(docs);
             } else {
