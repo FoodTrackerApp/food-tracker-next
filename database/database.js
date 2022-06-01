@@ -2,7 +2,7 @@ const Datastore = require("@seald-io/nedb");
 import host from "../constants/host";
 var db = {};
 
-db.items = new Datastore({ filename: `${host}/items.db`, autoload: true});
+db.items = new Datastore({ filename: `public/items.db`, autoload: true});
 db.items.loadDatabase();
 
 const retrieveAll = () => {
