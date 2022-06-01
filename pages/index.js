@@ -55,7 +55,9 @@ const Home = ({ data }) => {
 
   // Refresh next due data on origData change
   useEffect(() => {
-    setNextDue(CalculateNextDue(origData));
+    if(origData.length > 0) {
+      setNextDue(CalculateNextDue(origData));
+    }
   }, [setNextDue, origData]);
 
   const renderNextDue = data.length > 0 ? (
@@ -131,7 +133,11 @@ const Home = ({ data }) => {
 
 export async function getServerSideProps() {
   const res = await fetch(`${host}/api/get`);
-  const data = await res.json();
+  let data = await res.json();
+
+  if(data.length == 0) {
+    return { props: { data: [] } }
+  }
 
   const dateMonth = (date) => {
     if(parseInt(date.getMonth()+1) < 10) {

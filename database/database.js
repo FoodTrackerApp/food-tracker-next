@@ -18,7 +18,6 @@ const retrieveAll = () => {
 
 const saveItem = (item) => {
     return new Promise((resolve, reject) => {
-        console.log("Saving item in database", item)
         db.items.insert(item, function(err, savedItems) {
             if(!err) {
                 resolve(savedItems);
@@ -31,11 +30,8 @@ const saveItem = (item) => {
 
 const updateItem = (item) => {
     return new Promise((resolve, reject) => {
-
         const id = item._id;
-
         delete item.id
-
         db.items.update({_id: id}, item, {}, function(err, numReplaced) {
             if(!err) {
                 resolve(numReplaced);
@@ -52,7 +48,6 @@ const deleteItem = (object) => {
         db.items.remove({_id: object._id}, {}, function(err, numRemoved) {
             if(!err) {
                 resolve(numRemoved);
-
                 // refresh database
                 db.items.persistence.compactDatafile();
                 
