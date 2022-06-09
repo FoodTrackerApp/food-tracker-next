@@ -17,9 +17,6 @@ export default async function handler(req, res) {
             console.error("could not retrieve data",e);
             data =[];
         }
-        // put in info in database API
-        
-        console.log("Sending data:", data);
 
         if(data.length === 0) {
             console.log("Database is empty");
