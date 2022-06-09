@@ -26,10 +26,13 @@ const Home = ({ data }) => {
     const dueDate = new Date(date).getTime();
     const timeDiff = dueDate - now;
     const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    const days = Math.abs(diffDays);
+    const mod = days === 1 ? "day" : "days";
     if(diffDays > 0) {
       return (
+
         <Button flat color="success">
-          {`In ${diffDays} days`}
+          {`In ${diffDays} ${mod}`}
         </Button>
       )
     } else if(diffDays === 0) {
@@ -40,10 +43,9 @@ const Home = ({ data }) => {
         </Button>
       )
     } else {
-      const mod = Math.abs(diffDays) == 1 ? "day" : "days"
       return (
         <Button flat color="warning">
-          {`Overdue since ${Math.abs(diffDays)} ${mod}`}
+          {`Overdue since ${days} ${mod}`}
         </Button>
       )
     }
