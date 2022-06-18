@@ -77,7 +77,10 @@ Workaround: Always change the date when editing an item (using the same date wor
 
 ## Development
 
-Want to contribute? Great!
+For local development I recommend changing the IP to localhost
+```js
+const host = "http://localhost:30010";
+```
 
 
 [next]: <https://nextjs.org//>
