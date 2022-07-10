@@ -1,34 +1,89 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Food Tracker (next)
+FoodTracker is a locally hosted Web App that can Track Food Items
 
-## Getting Started
+## Features
 
-First, run the development server:
+- Due Dates
+- Counter
+- Sorted Table
+- Next Due notifier
 
-```bash
-npm run dev
-# or
-yarn dev
+## Tech
+
+FoodTracker next uses these technologies:
+
+- [Next]
+- [React]
+- [nedb]
+
+## Installation
+
+### 1. Download the repo via GitHub CLI
+
+```sh
+gh repo clone cr4yfish/food-tracker-next
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Change the IP the frontend will call to
+```sh
+cd food-tracker-next/constants
+nano hosts.js
+```
+- Change the follwing line.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+```js
+const host = "http://[YOUR IP ADDRESS]:30010";
+```
+If you are running FoodTracker on a Pi, for example, you should insert the Pi's IP.
+To find out your IP on Linux (which a PI is running on).
+```sh
+hostname -I
+```
+Make sure to use an upper-case "i".
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+### 3. Build and start the Server
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+In the food-tracker-next/ directory
+```sh
+npm run build
+```
 
-## Learn More
+Then
+```sh
+npm run start
+```
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. (optional) Set up pm2
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Stop the running instance
+```sh
+[ctrl+c]
+```
+- Install [pm2]
+```sh
+npm install pm2 -g
+```
+- Add z2m to pm2
+```sh
+pm2 start npm --name foodTracker -- start
+pm2 save
+pm2 start foodTracker
+```
 
-## Deploy on Vercel
+## Known Issues
+- When editing an item without changing the date, the date gets corrupted in the frontend and undefined behaviour will commence
+Workaround: Always change the date when editing an item (using the same date works as well).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Development
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+For local development I recommend changing the IP to localhost
+```js
+const host = "http://localhost:30010";
+```
+
+
+[next]: <https://nextjs.org//>
+[react]: <https://reactjs.org//>
+[nedb]: <https://github.com/seald/nedb>
+[pm2]: <https://pm2.keymetrics.io/>
