@@ -12,7 +12,7 @@ export default function MakeNewModal({
     form, 
     setForm, 
     isOpened
-}) {
+    }) {
 
     const [isLoading, setIsLoading] = useState(false);
     const [errorState, setErrorState] = useState("primary");
@@ -36,6 +36,13 @@ export default function MakeNewModal({
         // overwrite toUpdate which got carried over from form
         sendBody.toUpdate = isOpened;
 
+        // check if date is invalid
+        if(sendBody.date.includes(".")) {
+            // convert date from DD.MM.YYYY to YYYY-MM-DD
+            const dateString = sendBody.date.split(".");
+            sendBody.date = `${dateString[2]}-${dateString[1]}-${dateString[0]}`;
+        }
+
         const response = await fetch(`api/send/`, {
             method: "POST",
             headers: {
@@ -57,11 +64,10 @@ export default function MakeNewModal({
                 setOrigData(prevState => [...prevState, newItem])
             } else {
                 // modify item in rows and origData
-                
-                // convert time to DD.MM.YYYY format
-                const formattedDate = FormatTime(form.date, false);
                 const updatedItem = form;
-                updatedItem.date = formattedDate;
+
+                // Add date
+                updatedItem.date = form.date.includes("-") ? FormatTime(form.date, false) : form.date;
 
                 const index = origData.findIndex(item => item._id === updatedItem._id);
                 setRows(prevState => {
@@ -117,37 +123,35 @@ export default function MakeNewModal({
     return (
     <>
     <Modal blur closeButton open={isModalVisible} onClose={() => setModalVisible(false)} css={{background: "#00000075", backdropFilter:"blur(10px)"}} >
-        <Modal.Header>
-        <Text id="modal-title" size={18}>Make new</Text>
-        </Modal.Header>
+        <Modal.Header> <Text id="modal-title" size={18}>Make new</Text> </Modal.Header>
 
-    <Modal.Body>
-        <Spacer y={1} />
-        <Input onChange={(e) => textHandler(e, "name" )} required underlined clearable labelPlaceholder='Name'  type="text"   initialValue={form.name}  />
-        <Spacer  y={.25} />
-        <Input onChange={(e) => textHandler(e, "count")} required underlined clearable labelPlaceholder='Count' type="number" initialValue={form.count}  />
-        <Spacer  y={.25} />
-        <Input onChange={(e) => textHandler(e, "date" )} required underlined clearable labelPlaceholder='Date'  type="date"   initialValue={FormatTime2(form.date)} />
-        <Spacer  y={.25} />
-        <Input onChange={(e) => textHandler(e, "group")} required underlined clearable labelPlaceholder='Place' type="text"   initialValue={form.group} />
-        <Spacer />
+        <Modal.Body>
+            <Spacer y={1} />
+            <Input onChange={(e) => textHandler(e, "name" )} required underlined clearable labelPlaceholder='Name'  type="text"   initialValue={form.name}  />
+            <Spacer  y={.25} />
+            <Input onChange={(e) => textHandler(e, "count")} required underlined clearable labelPlaceholder='Count' type="number" initialValue={form.count}  />
+            <Spacer  y={.25} />
+            <Input onChange={(e) => textHandler(e, "date" )} required underlined labelPlaceholder='Date'  type="date" initialValue={FormatTime2(form.date)} />
+            <Spacer  y={.25} />
+            <Input onChange={(e) => textHandler(e, "group")} required underlined clearable labelPlaceholder='Place' type="text"   initialValue={form.group} />
+            <Spacer />
 
-        <Modal.Footer>
-            <Grid.Container gap={2} direction="row" justify="center">
-                <Grid>
-                    <Button color={errorState} onClick={(e) => {submitForm(); setIsLoading(true)}}>{renderButton}</Button>
-                </Grid>
-                {isOpened ? (
-                <Grid>
-                    <Button bordered color="error" onClick={(e) => deleteForm()}>Delete</Button>
-                </Grid>
-                ) : null}
-                <Grid>
-                    <Button bordered color="warning" onClick={(e) => setModalVisible(false)}>Back</Button>
-                </Grid>
-            </Grid.Container>
-        </Modal.Footer>
-    </Modal.Body>
+            <Modal.Footer>
+                <Grid.Container gap={2} direction="row" justify="center">
+                    <Grid>
+                        <Button color={errorState} onClick={(e) => {submitForm(); setIsLoading(true)}}>{renderButton}</Button>
+                    </Grid>
+                    {isOpened ? (
+                    <Grid>
+                        <Button bordered color="error" onClick={(e) => deleteForm()}>Delete</Button>
+                    </Grid>
+                    ) : null}
+                    <Grid>
+                        <Button bordered color="warning" onClick={(e) => setModalVisible(false)}>Back</Button>
+                    </Grid>
+                </Grid.Container>
+            </Modal.Footer>
+        </Modal.Body>
 
     </Modal>
     </>

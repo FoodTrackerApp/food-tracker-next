@@ -1,6 +1,6 @@
 //const host = "https://food-tracker-next.vercel.app";
 
 // production
-const host = "http://192.168.0.100:30010";
+const host = "http:/localhost:30001";
 
 export default host;
