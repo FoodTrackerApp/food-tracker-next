@@ -112,7 +112,7 @@ export default function MakeNewModal({
         }
     }
 
-    const renderButton = isLoading ? <Loading color={errorState == "primary" ? "primary" : "error"} /> : saveButtonText
+    const renderButton = isLoading ? <Loading size="sm" color="white" /> : saveButtonText
 
     return (
     <>
@@ -135,7 +135,7 @@ export default function MakeNewModal({
         <Modal.Footer>
             <Grid.Container gap={2} direction="row" justify="center">
                 <Grid>
-                    <Button color={errorState == "primary" ? "primary" : "error"} onClick={(e) => {submitForm(); setIsLoading(true)}}>{renderButton}</Button>
+                    <Button color={errorState} onClick={(e) => {submitForm(); setIsLoading(true)}}>{renderButton}</Button>
                 </Grid>
                 {isOpened ? (
                 <Grid>
