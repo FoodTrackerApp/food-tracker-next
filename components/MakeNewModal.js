@@ -11,7 +11,7 @@ export default function MakeNewModal({
     origData,
     form, 
     setForm, 
-    isOpened=false
+    isOpened
 }) {
 
     const [isLoading, setIsLoading] = useState(false);
@@ -30,10 +30,11 @@ export default function MakeNewModal({
     const submitForm = async () => {
         setErrorState("primary");
 
-        const sendBody = {
-            toUpdate: isOpened ? true : false,
+        let sendBody = {
             ...form,
         }
+        // overwrite toUpdate which got carried over from form
+        sendBody.toUpdate = isOpened;
 
         const response = await fetch(`api/send/`, {
             method: "POST",
@@ -72,13 +73,14 @@ export default function MakeNewModal({
                     return [...prevState]
                 })
             }
-         
+            
             setIsLoading(false);
+            setSaveButtonText("Save");
         } else {
-            console.log(data.error);
-            setIsLoading(false)
+            console.log("Got error from fetch", data);
+            setIsLoading(false);
             setErrorState("error");
-            setSaveButtonText("Error! Try again")
+            setSaveButtonText("Error! Try again");
         }
     }
 

@@ -15,7 +15,7 @@ export default async function handler(req, res) {
             data = await retrieveHandle();
         } catch(e) {
             console.error("could not retrieve data",e);
-            data =[];
+            data = [];
         }
 
         if(data.length === 0) {
