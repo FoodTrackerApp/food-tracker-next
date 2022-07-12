@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     }
 
     if(req.method === 'POST') {
-        const item = req.body;
+        const item = JSON.parse(req.body);
         console.log("got post request", item);
         try {
             if(!item.toUpdate) {
