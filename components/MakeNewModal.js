@@ -123,7 +123,7 @@ export default function MakeNewModal({
     return (
     <>
     <Modal blur closeButton open={isModalVisible} onClose={() => setModalVisible(false)} css={{background: "#00000075", backdropFilter:"blur(10px)"}} >
-        <Modal.Header> <Text id="modal-title" size={18}>Make new</Text> </Modal.Header>
+        <Modal.Header> <Text id="modal-title" size={18}>{form.name.length == 0 ? "Make new" : `Edit ${form.name}`}</Text></Modal.Header>
 
         <Modal.Body>
             <Spacer y={1} />

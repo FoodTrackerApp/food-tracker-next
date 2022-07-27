@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { Container, Card, Tooltip, Button, Grid, Spacer} from "@nextui-org/react";
+import { Container, Card, Tooltip, Button, Grid, Spacer, Text} from "@nextui-org/react";
 import { FaQrcode, FaPlusSquare } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import TableSection from '../components/TableSection.js';
@@ -28,27 +28,37 @@ const Home = ({ data }) => {
     const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
     const days = Math.abs(diffDays);
     const mod = days === 1 ? "day" : "days";
+
     if(diffDays > 0) {
       return (
 
-        <Button flat color="success">
+        <Button onClick={() => handleClick(nextDue._id)} flat color="success">
           {`In ${diffDays} ${mod}`}
         </Button>
       )
     } else if(diffDays === 0) {
       // due today
       return (
-        <Button flat color="warning">
+        <Button onClick={() => handleClick(nextDue._id)} flat color="warning">
           {`Due today`}
         </Button>
       )
     } else {
       return (
-        <Button flat color="warning">
+        <Button onClick={() => handleClick(nextDue._id)} flat color="warning">
           {`Overdue since ${days} ${mod}`}
         </Button>
       )
     }
+  }
+
+  const handleClick = (key) => {
+    console.log(key)
+    const element = origData.find((ele) => ele._id == key);
+
+    setForm({...element});
+    setIsOpened();
+    setIsModalVisible(true);
   }
 
   const clearForm = () => {
@@ -85,7 +95,7 @@ const Home = ({ data }) => {
       <Container>
         <Container>
         <Spacer />
-          <h1>FoodTracker</h1>
+          <Text h2>FoodTracker</Text>
         </Container>
 
         <MakeNewModal 
