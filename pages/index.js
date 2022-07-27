@@ -57,7 +57,7 @@ const Home = ({ data }) => {
     const element = origData.find((ele) => ele._id == key);
 
     setForm({...element});
-    setIsOpened();
+    setIsOpened(true);
     setIsModalVisible(true);
   }
 
