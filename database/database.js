@@ -50,7 +50,10 @@ const updateItem = (item) => {
 
 const deleteItem = (object) => {
     return new Promise((resolve, reject) => {
-        db.items.remove({_id: object._id}, {}, function(err, numRemoved) {
+
+        let query = object != undefined ? {_id: object._id} : {};
+
+        db.items.remove(query, {multi: true }, function(err, numRemoved) {
             if(!err) {
                 resolve(numRemoved);
                 // refresh database
@@ -80,9 +83,18 @@ const lastmod = {
     // set new date string as last modification
     , set: (date) => {
         return new Promise((resolve, reject) => {
-            db.lastmod.update({}, {date: date}, {upsert: true}, function(err, numReplaced) {
+            db.lastmod.update({}, {date: date}, {}, function(err, numReplaced) {
                 if(!err) {
-                    resolve(numReplaced);
+                    if(numReplaced == 0) {
+                        // insert new doc
+                        db.lastmod.insert({date: date}, function(err, savedItems) {
+                            if(!err) {
+                                resolve(savedItems);
+                            } else {
+                                reject(err);
+                            }
+                        })
+                    }
                 } else {
                     reject(err);
                 }

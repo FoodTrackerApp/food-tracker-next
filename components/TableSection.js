@@ -20,7 +20,7 @@ export default function TableSection({ data, rows,
           label: "Due",
         },
         {
-          key: "group",
+          key: "place",
           label: "Place",
         }
     ]

@@ -15,7 +15,7 @@ const Home = ({ data }) => {
   const [nextDue, setNextDue] = useState(CalculateNextDue(origData));
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [rows, setRows] = useState(origData);
-  const [form, setForm] = useState({name: "", count: "", date: "", group: ""});
+  const [form, setForm] = useState({name: "", count: "", date: "", place: ""});
   const [isOpened, setIsOpened] = useState(false);
 
   const getTimeDiffInDays = (date) => {
@@ -60,7 +60,7 @@ const Home = ({ data }) => {
   }
 
   const clearForm = () => {
-    setForm({name: "", count: "", date: "", group: ""});
+    setForm({name: "", count: "", date: "", place: ""});
   }
 
   // Refresh next due data on origData change

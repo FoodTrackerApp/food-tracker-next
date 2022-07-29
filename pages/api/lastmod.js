@@ -14,26 +14,22 @@ export default async function handler(req, res) {
             data = 0;
         }
 
-        if(data.length === 0) {
-            console.log("Database is empty");
-            data = 0;
-        }
-        res.status(200).json(data);
+        res.status(200).json(data.date);
     }
 
 
-    else if(req.method === "SET") {
+    else if(req.method === "POST") {
         let newDate = req.body.date;
-        let res = 304;
+        let rescode = 304;
         try {
             await lastmod.set(newDate);
-            res = 200;
+            rescode = 200;
         } catch(e) {
             console.error("could not set new date",e);
-            res = 500;
+            rescode = 500;
         }
 
-        res.status(res);
+        res.status(rescode).json(newDate);
 
     }
 }

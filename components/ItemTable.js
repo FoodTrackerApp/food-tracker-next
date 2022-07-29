@@ -15,7 +15,7 @@ export default function ItemTable({ rows, columns,
       case "date":
         const date = FormatTime(cellValue);
         return date;
-      case "group":
+      case "place":
         return cellValue;
       default:
           return cellValue

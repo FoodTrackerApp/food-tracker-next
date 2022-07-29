@@ -54,7 +54,7 @@ export default function MakeNewModal({
             setModalVisible(false);
             if(!isOpened) {
                 // Append new Item to states
-                const newItem = { name: data.name, date: data.date, group: data.group, count: data.count, _id: data._id }
+                const newItem = { name: data.name, date: data.date, place: data.place, count: data.count, _id: data._id }
                 // append new item to rows and origData (for searching)
                 setRows(prevState => [...prevState, newItem])
                 setOrigData(prevState => [...prevState, newItem])
@@ -127,7 +127,7 @@ export default function MakeNewModal({
             <Spacer  y={.25} />
             <Input onChange={(e) => textHandler(e, "date" )} required underlined labelPlaceholder='Date' type="date" initialValue={FormatTime(form.date, "YYYY-MM-DD")} />
             <Spacer  y={.25} />
-            <Input onChange={(e) => textHandler(e, "group")} required underlined clearable labelPlaceholder='Place' type="text"   initialValue={form.group} />
+            <Input onChange={(e) => textHandler(e, "place")} required underlined clearable labelPlaceholder='Place' type="text"   initialValue={form.place} />
             <Spacer />
 
             <Modal.Footer>
