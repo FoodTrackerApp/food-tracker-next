@@ -1,17 +1,24 @@
-// takes time in DD.MM.YYYY or YYYY-MM-DD format and returns Date Object
-export default function FormatTime(date, direction=true) {
-    let newDate
-
-    if(direction === true) {
-        // if date is in DD.MM.YYYY format, return Date object
-        const formattedDate = date.split(".");
-        newDate = new Date(formattedDate[2], formattedDate[1]-1, formattedDate[0]);
-    } else {
-        // if date is in YYYY-MM-DD format, return string in DD.MM.YYYY format
-        const formattedDate = date.split("-");
-        newDate = `${formattedDate[2]}.${formattedDate[1]}.${formattedDate[0]}`;
+// Takes date in time. Outputs string in format DD.MM.YYYY
+export default function FormatTime(date, outFormat = "DD.MM.YYYY") {
+    const dateMonth = (date) => {
+      if(parseInt(date.getMonth()+1) < 10) {
+          return `0${date.getMonth()+1}`
+      } else { return date.getMonth()+1 }
     }
-
-    return newDate;
-
-}
+    const dateDay = (date) => {
+      if(parseInt(date.getDate()) < 10) {
+          return `0${date.getDate()}`
+      } else { return date.getDate() }
+    }
+    
+    // Map Date to DD.MM.YYYY
+    date = new Date(date);
+    switch(outFormat) {
+      case "DD.MM.YYYY":
+        return `${dateDay(date)}.${dateMonth(date)}.${date.getFullYear()}`
+      case "YYYY-MM-DD":
+        return `${date.getFullYear()}-${dateMonth(date)}-${dateDay(date)}`
+      default:
+        return date
+    }
+  }

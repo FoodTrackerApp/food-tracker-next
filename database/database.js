@@ -1,9 +1,11 @@
 const Datastore = require("@seald-io/nedb");
-import host from "../constants/host";
 var db = {};
 
 db.items = new Datastore({ filename: `database/items.db`, autoload: true});
 db.items.loadDatabase();
+
+db.lastmod = new Datastore({ filename: "database/lastmod.db", autoload: true});
+db.lastmod.loadDatabase();
 
 const retrieveAll = () => {
     console.log("Database handler request");
@@ -61,4 +63,32 @@ const deleteItem = (object) => {
     })
 }
 
-export { retrieveAll, saveItem, updateItem, deleteItem }
+const lastmod = {
+    // return date string of last modification
+    get: () => {
+        return new Promise((resolve, reject) => {
+            db.lastmod.findOne({}, function(err, doc) {
+                if(!err) {
+                    resolve(doc);
+                } else {
+                    reject(err);
+                }
+            })
+        })
+    }
+
+    // set new date string as last modification
+    , set: (date) => {
+        return new Promise((resolve, reject) => {
+            db.lastmod.update({}, {date: date}, {upsert: true}, function(err, numReplaced) {
+                if(!err) {
+                    resolve(numReplaced);
+                } else {
+                    reject(err);
+                }
+            })
+        })
+    }
+}
+
+export { retrieveAll, saveItem, updateItem, deleteItem, lastmod }

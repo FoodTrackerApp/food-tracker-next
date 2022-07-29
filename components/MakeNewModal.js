@@ -1,7 +1,6 @@
 import { Spacer, Modal, Input, Text, Button, Grid, Loading } from "@nextui-org/react";
 import { useState } from "react";
 import FormatTime from "../functions/FormatTime";
-import FormatTime2 from "../functions/FormatTime2";
 
 export default function MakeNewModal({ 
     isModalVisible, 
@@ -19,7 +18,12 @@ export default function MakeNewModal({
     const [saveButtonText, setSaveButtonText] = useState("Save");
 
     const textHandler = (e, name) => {
-        const value = e.target.value;
+        let value = e.target.value;
+
+        // convert date to date object
+        if(name === "date") {
+            value = new Date(value).getTime();
+        }
         
         setForm(prevState => ({
             ...prevState,
@@ -36,13 +40,6 @@ export default function MakeNewModal({
         // overwrite toUpdate which got carried over from form
         sendBody.toUpdate = isOpened;
 
-        // check if date is invalid
-        if(sendBody.date.includes(".")) {
-            // convert date from DD.MM.YYYY to YYYY-MM-DD
-            const dateString = sendBody.date.split(".");
-            sendBody.date = `${dateString[2]}-${dateString[1]}-${dateString[0]}`;
-        }
-
         const response = await fetch(`api/send/`, {
             method: "POST",
             headers: {
@@ -57,17 +54,13 @@ export default function MakeNewModal({
             setModalVisible(false);
             if(!isOpened) {
                 // Append new Item to states
-                const formattedDate = FormatTime(data.date, false);
-                const newItem = { name: data.name, date: formattedDate, group: data.group, count: data.count, _id: data._id }
+                const newItem = { name: data.name, date: data.date, group: data.group, count: data.count, _id: data._id }
                 // append new item to rows and origData (for searching)
                 setRows(prevState => [...prevState, newItem])
                 setOrigData(prevState => [...prevState, newItem])
             } else {
                 // modify item in rows and origData
                 const updatedItem = form;
-
-                // Add date
-                updatedItem.date = form.date.includes("-") ? FormatTime(form.date, false) : form.date;
 
                 const index = origData.findIndex(item => item._id === updatedItem._id);
                 setRows(prevState => {
@@ -118,6 +111,7 @@ export default function MakeNewModal({
         }
     }
 
+
     const renderButton = isLoading ? <Loading size="sm" color="white" /> : saveButtonText
 
     return (
@@ -131,7 +125,7 @@ export default function MakeNewModal({
             <Spacer  y={.25} />
             <Input onChange={(e) => textHandler(e, "count")} required underlined clearable labelPlaceholder='Count' type="number" initialValue={form.count}  />
             <Spacer  y={.25} />
-            <Input onChange={(e) => textHandler(e, "date" )} required underlined labelPlaceholder='Date'  type="date" initialValue={FormatTime2(form.date)} />
+            <Input onChange={(e) => textHandler(e, "date" )} required underlined labelPlaceholder='Date' type="date" initialValue={FormatTime(form.date, "YYYY-MM-DD")} />
             <Spacer  y={.25} />
             <Input onChange={(e) => textHandler(e, "group")} required underlined clearable labelPlaceholder='Place' type="text"   initialValue={form.group} />
             <Spacer />

@@ -7,6 +7,8 @@ import MakeNewModal from '../components/MakeNewModal.js';
 import host from '../constants/host.js';
 import CalculateNextDue from '../functions/CalculateNextDue.js';
 
+
+
 const Home = ({ data }) => {
   // only use data for this, use OrigData from now on
   const [origData, setOrigData] = useState(data);
@@ -19,11 +21,7 @@ const Home = ({ data }) => {
   const getTimeDiffInDays = (date) => {
     const now = new Date().getTime();
 
-    // convert date to YYYY-MM-DD
-    const dateString = date.split(".");
-    date = new Date(dateString[2], dateString[1]-1, dateString[0]);
-
-    const dueDate = new Date(date).getTime();
+    const dueDate = date;
     const timeDiff = dueDate - now;
     const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
     const days = Math.abs(diffDays);
@@ -150,24 +148,6 @@ export async function getServerSideProps() {
   if(data.length == 0) {
     return { props: { data: [] } }
   }
-
-  const dateMonth = (date) => {
-    if(parseInt(date.getMonth()+1) < 10) {
-        return `0${date.getMonth()+1}`
-    } else { return date.getMonth()+1 }
-  }
-
-  const dateDay = (date) => {
-    if(parseInt(date.getDate()) < 10) {
-        return `0${date.getDate()}`
-    } else { return date.getDate() }
-  }
-  
-  // Map Date to DD.MM.YYYY
-  data.forEach(element => {
-    let date = new Date(element.date);
-    element.date = `${dateDay(date)}.${dateMonth(date)}.${date.getFullYear()}`
-  });
 
   return { props: {data} };
 }

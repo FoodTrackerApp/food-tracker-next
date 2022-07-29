@@ -1,5 +1,6 @@
 import { Table, Container, Tooltip, useAsyncList, useCollator } from "@nextui-org/react";
 import { useEffect } from "react";
+import FormatTime from "../functions/FormatTime.js";
 
 export default function ItemTable({ rows, columns, 
   setForm, setModal, setIsOpened }) {
@@ -8,15 +9,12 @@ export default function ItemTable({ rows, columns,
     const cellValue = item[key];
     switch(key) {
       case "name":
-        return (
-          <Tooltip content={`Some more info about ${cellValue}`}>
-            <span>{cellValue}</span>
-          </Tooltip>
-        );
+        return cellValue;
       case "count":
         return cellValue;
       case "date":
-        return cellValue;
+        const date = FormatTime(cellValue);
+        return date;
       case "group":
         return cellValue;
       default:
@@ -56,11 +54,6 @@ export default function ItemTable({ rows, columns,
       items: items.sort((a, b) => {
         let first = a[sortDescriptor.column];
         let second = b[sortDescriptor.column];
-
-        if(sortDescriptor.column === "date"){
-          first = convertDateToTime(first);
-          second = convertDateToTime(second);
-        } 
 
         let cmp = collator.compare(first, second);
         if (sortDescriptor.direction === "descending") {
