@@ -40,6 +40,14 @@ export default function MakeNewModal({
         // overwrite toUpdate which got carried over from form
         sendBody.toUpdate = isOpened;
 
+        // add last mod date
+        sendBody.datemodified = new Date().getTime();
+
+        // add deleted prop, set to null
+        sendBody.deleted = null;
+
+        console.log("Sending:", sendBody);
+
         const response = await fetch(`api/send/`, {
             method: "POST",
             headers: {
@@ -123,7 +131,7 @@ export default function MakeNewModal({
             <Spacer y={1} />
             <Input onChange={(e) => textHandler(e, "name" )} required underlined clearable labelPlaceholder='Name'  type="text"   initialValue={form.name}  />
             <Spacer  y={.25} />
-            <Input onChange={(e) => textHandler(e, "count")} required underlined clearable labelPlaceholder='Count' type="number" initialValue={form.count}  />
+            <Input onChange={(e) => textHandler(e, "count")} required underlined labelPlaceholder='Count' type="number" initialValue={form.count}  />
             <Spacer  y={.25} />
             <Input onChange={(e) => textHandler(e, "date" )} required underlined labelPlaceholder='Date' type="date" initialValue={FormatTime(form.date, "YYYY-MM-DD")} />
             <Spacer  y={.25} />

@@ -8,10 +8,9 @@ db.lastmod = new Datastore({ filename: "database/lastmod.db", autoload: true});
 db.lastmod.loadDatabase();
 
 const retrieveAll = () => {
-    console.log("Database handler request");
+    console.log("retrieving all items");
     return new Promise((resolve, reject) => {
         db.items.find({}, function(err, docs) {
-            console.log("database handler got items", docs)
             if(!err) {
                 resolve(docs);
             } else {
@@ -22,6 +21,7 @@ const retrieveAll = () => {
 }
 
 const saveItem = (item) => {
+    console.log("saving item", item);
     return new Promise((resolve, reject) => {
         db.items.insert(item, function(err, savedItems) {
             if(!err) {
@@ -34,6 +34,7 @@ const saveItem = (item) => {
 }
 
 const updateItem = (item) => {
+    console.log("updating item", item);
     return new Promise((resolve, reject) => {
         const id = item._id;
         delete item.id
@@ -49,6 +50,7 @@ const updateItem = (item) => {
 }
 
 const deleteItem = (object) => {
+    console.log("deleting item", object);
     return new Promise((resolve, reject) => {
 
         let query = object != undefined ? {_id: object._id} : {};
@@ -103,4 +105,4 @@ const lastmod = {
     }
 }
 
-export { retrieveAll, saveItem, updateItem, deleteItem, lastmod }
+export { retrieveAll, saveItem, updateItem, deleteItem };

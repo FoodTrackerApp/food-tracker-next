@@ -149,6 +149,9 @@ export async function getServerSideProps() {
     return { props: { data: [] } }
   }
 
+  // filter out deleted items
+  data = data.filter((ele) => ele.deleted === null);
+
   return { props: {data} };
 }
 
