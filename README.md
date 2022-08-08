@@ -1,6 +1,8 @@
 # Food Tracker (next)
 FoodTracker is a locally hosted Web App that can Track Food Items
 
+For the App integration, go to [FoodTrackerApp] (https://github.com/cr4yfish/foodTrackerApp)
+
 ## Features
 
 - Due Dates
