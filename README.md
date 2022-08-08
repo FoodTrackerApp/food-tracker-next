@@ -1,7 +1,7 @@
 # Food Tracker (next)
 FoodTracker is a locally hosted Web App that can Track Food Items
 
-For the App integration, go to [FoodTrackerApp] (https://github.com/cr4yfish/foodTrackerApp)
+For the App integration, go to [FoodTrackerApp]
 
 ## Features
 
@@ -89,3 +89,4 @@ const host = "http://localhost:30010";
 [react]: <https://reactjs.org//>
 [nedb]: <https://github.com/seald/nedb>
 [pm2]: <https://pm2.keymetrics.io/>
+[FoodTrackerApp]: https://github.com/cr4yfish/foodTrackerApp
