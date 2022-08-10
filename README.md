@@ -74,8 +74,10 @@ pm2 start foodTracker
 ```
 
 ## Known Issues
-- When editing an item without changing the date, the date gets corrupted in the frontend and undefined behaviour will commence
-Workaround: Always change the date when editing an item (using the same date works as well).
+~~- When editing an item without changing the date, the date gets corrupted in the frontend and undefined behaviour will commence
+Workaround: Always change the date when editing an item (using the same date works as well).~~
+
+This has been fixed.
 
 ## Development
 
