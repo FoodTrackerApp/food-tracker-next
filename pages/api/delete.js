@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     }
 
     if(req.method === "DELETE") {
-        const reqBody = JSON.parse(req.body);
+        const reqBody = req.body;
 
         try {
             let newItem = {...reqBody};
