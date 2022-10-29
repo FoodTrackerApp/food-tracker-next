@@ -20,7 +20,7 @@ export default async function handler(req, res) {
             // update item in database
             await updateHandle(newItem);
 
-            res.status(200).json({success: true, data: data});
+            res.status(200).json({success: true, data: newItem});
         } catch(e) {
             res.status(500).json({
                 error: e,
