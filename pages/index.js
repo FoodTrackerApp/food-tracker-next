@@ -6,14 +6,12 @@ import TableSection from '../components/TableSection.js';
 import MakeNewModal from '../components/MakeNewModal.js';
 import CalculateNextDue from '../functions/CalculateNextDue.js';
 
-
-
-const Home = ({ data }) => {
+const Home = ({ }) => {
   // only use data for this, use OrigData from now on
-  const [origData, setOrigData] = useState(data);
-  const [nextDue, setNextDue] = useState(CalculateNextDue(origData));
+  const [origData, setOrigData] = useState([]);
+  const [nextDue, setNextDue] = useState({});
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [rows, setRows] = useState(origData);
+  const [rows, setRows] = useState([]);
   const [form, setForm] = useState({name: "", count: "", date: "", place: ""});
   const [isOpened, setIsOpened] = useState(false);
 
@@ -69,7 +67,12 @@ const Home = ({ data }) => {
     }
   }, [setNextDue, origData]);
 
-  const renderNextDue = data.length > 0 ? (
+  // fetch data on load
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const renderNextDue = origData.length > 0 ? (
     <Grid>
     <Card>
       <span>Next due</span>
@@ -80,6 +83,24 @@ const Home = ({ data }) => {
     </Card>
   </Grid>
   ) : null
+
+  const fetchData = async () => {
+    console.log("fetching data");
+    const response = await fetch(`api/get/`);
+    let data = await response.json();
+    console.log("Got data:", data);
+    if(data.length == 0) {
+      return { props: { data: [] } }
+    }
+  
+    // filter out deleted items
+    data = data.filter((ele) => ele.deleted === null);
+
+    // set init values
+    setOrigData(data);
+    setRows(data);
+    setNextDue(CalculateNextDue(data));
+  }
 
   return (
     <div>
@@ -138,20 +159,6 @@ const Home = ({ data }) => {
       />
     </div>
   )
-}
-
-export async function getServerSideProps() {
-  const res = await fetch(`/api/get`);
-  let data = await res.json();
-
-  if(data.length == 0) {
-    return { props: { data: [] } }
-  }
-
-  // filter out deleted items
-  data = data.filter((ele) => ele.deleted === null);
-
-  return { props: {data} };
 }
 
 export default Home;
