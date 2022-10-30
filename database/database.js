@@ -4,9 +4,6 @@ var db = {};
 db.items = new Datastore({ filename: `database/items.db`, autoload: true});
 db.items.loadDatabase();
 
-db.lastmod = new Datastore({ filename: "database/lastmod.db", autoload: true});
-db.lastmod.loadDatabase();
-
 const retrieveAll = () => {
     console.log("retrieving all items");
     return new Promise((resolve, reject) => {
@@ -66,43 +63,6 @@ const deleteItem = (object) => {
             }
         })
     })
-}
-
-const lastmod = {
-    // return date string of last modification
-    get: () => {
-        return new Promise((resolve, reject) => {
-            db.lastmod.findOne({}, function(err, doc) {
-                if(!err) {
-                    resolve(doc);
-                } else {
-                    reject(err);
-                }
-            })
-        })
-    }
-
-    // set new date string as last modification
-    , set: (date) => {
-        return new Promise((resolve, reject) => {
-            db.lastmod.update({}, {date: date}, {}, function(err, numReplaced) {
-                if(!err) {
-                    if(numReplaced == 0) {
-                        // insert new doc
-                        db.lastmod.insert({date: date}, function(err, savedItems) {
-                            if(!err) {
-                                resolve(savedItems);
-                            } else {
-                                reject(err);
-                            }
-                        })
-                    }
-                } else {
-                    reject(err);
-                }
-            })
-        })
-    }
 }
 
 export { retrieveAll, saveItem, updateItem, deleteItem };

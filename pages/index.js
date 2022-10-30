@@ -4,7 +4,6 @@ import { FaQrcode, FaPlusSquare } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import TableSection from '../components/TableSection.js';
 import MakeNewModal from '../components/MakeNewModal.js';
-import host from '../constants/host.js';
 import CalculateNextDue from '../functions/CalculateNextDue.js';
 
 
@@ -142,7 +141,7 @@ const Home = ({ data }) => {
 }
 
 export async function getServerSideProps() {
-  const res = await fetch(`${host}/api/get`);
+  const res = await fetch(`/api/get`);
   let data = await res.json();
 
   if(data.length == 0) {
