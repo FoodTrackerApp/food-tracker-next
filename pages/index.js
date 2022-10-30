@@ -89,9 +89,6 @@ const Home = ({ }) => {
     const response = await fetch(`api/get/`);
     let data = await response.json();
     console.log("Got data:", data);
-    if(data.length == 0) {
-      return { props: { data: [] } }
-    }
   
     // filter out deleted items
     data = data.filter((ele) => (ele.deleted === null) || (ele.deleted === 0));
