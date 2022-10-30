@@ -94,7 +94,7 @@ const Home = ({ }) => {
     }
   
     // filter out deleted items
-    data = data.filter((ele) => ele.deleted === null);
+    data = data.filter((ele) => (ele.deleted === null) || (ele.deleted === 0));
 
     // set init values
     setOrigData(data);
