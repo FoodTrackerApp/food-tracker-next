@@ -12,7 +12,7 @@ export default async function handler(req, res) {
         const reqBody = req.body;
 
         try {
-            let newItem = {...reqBody};
+            let newItem = reqBody;
 
             // make sure deleted is set to 1
             newItem.deleted = 1;

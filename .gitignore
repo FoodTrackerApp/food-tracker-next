@@ -40,4 +40,3 @@ yarn-error.log*
 sw.js
 workbox-*.js
 public/sw.js
-public/sw.js.map
