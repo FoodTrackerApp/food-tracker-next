@@ -21,6 +21,7 @@ export default async function handler(req, res) {
             if(!item.toUpdate) {
                 console.log("Adding new item");
                 const data = await sendHandle(item);
+                console.log("Database response:", data);
                 const resBody = {
                     success: true,
                     ...data,
