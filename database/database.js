@@ -47,7 +47,7 @@ const updateItem = (item) => {
 }
 
 const deleteItem = (object) => {
-    console.log("deleting item", object);
+    console.log("=========\nDEPRECATED API !! \n====\ndeleting item", object);
     return new Promise((resolve, reject) => {
 
         let query = object != undefined ? {_id: object._id} : {};
