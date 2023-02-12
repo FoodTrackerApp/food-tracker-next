@@ -2,6 +2,8 @@ import { Spacer, Modal, Input, Text, Button, Grid, Loading } from "@nextui-org/r
 import { useState } from "react";
 import FormatTime from "../functions/FormatTime";
 
+import Iitem from "../interfaces/Iitem";
+
 export default function MakeNewModal({ 
     isModalVisible, 
     setModalVisible, 
@@ -14,7 +16,7 @@ export default function MakeNewModal({
     }) {
 
     const [isLoading, setIsLoading] = useState(false);
-    const [errorState, setErrorState] = useState("primary");
+    const [errorState, setErrorState] = useState<"default" | "primary" | "secondary" | "success" | "warning" | "error" | "gradient">("primary");
     const [saveButtonText, setSaveButtonText] = useState("Save");
 
     const textHandler = (e, name) => {
@@ -133,7 +135,7 @@ export default function MakeNewModal({
             <Spacer  y={.25} />
             <Input onChange={(e) => textHandler(e, "count")} required underlined labelPlaceholder='Count' type="number" initialValue={form.count}  />
             <Spacer  y={.25} />
-            <Input onChange={(e) => textHandler(e, "date" )} required underlined labelPlaceholder='Date' type="date" initialValue={FormatTime(form.date, "YYYY-MM-DD")} />
+            <Input onChange={(e) => textHandler(e, "date" )} required underlined labelPlaceholder='Date' type="date" initialValue={FormatTime(form.date, "YYYY-MM-DD").toString()} />
             <Spacer  y={.25} />
             <Input onChange={(e) => textHandler(e, "place")} required underlined clearable labelPlaceholder='Place' type="text"   initialValue={form.place} />
             <Spacer />

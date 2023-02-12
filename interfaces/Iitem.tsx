@@ -6,4 +6,5 @@ export default interface Iitem {
     count: number;
     hasDueDate: boolean;
     date: string;
+    deleted: boolean;
 }

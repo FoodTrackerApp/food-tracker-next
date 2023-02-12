@@ -2,11 +2,21 @@ import ItemTable from "./ItemTable"
 import { Input, Spacer, Grid} from "@nextui-org/react";
 import { useState, useEffect} from "react"
 
+import Iitem from "../interfaces/Iitem";
+
 export default function TableSection({ data, rows, 
-  setRows, setForm, setModal, setIsOpened }) {
+  setRows, setForm, setModal, setIsOpened } : {
+    data: Array<Iitem> | undefined,
+    rows: Array<Iitem> | undefined,
+
+    setRows: (arg0: Array<Iitem> | undefined) => void,
+    setForm: (arg0: Iitem | undefined) => void,
+    setModal: (arg0: boolean) => void,
+    setIsOpened: (arg0: boolean) => void
+  }) {
     const [searchTerm, setSearchTerm] = useState("")
 
-    const columns = [
+    const columns : Array<{ key: string, label: string}> =  [
         {
           key:"name",
           label: "Name",
@@ -27,7 +37,7 @@ export default function TableSection({ data, rows,
 
     useEffect(() => {
         if(searchTerm.length > 0) {
-          const filteredRows = data.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+          const filteredRows = data?.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
           setRows(filteredRows)
         } else { setRows(data) }
       }, [searchTerm, data, setRows])
@@ -48,7 +58,7 @@ export default function TableSection({ data, rows,
       
     <ItemTable 
         setIsOpened={setIsOpened} setForm={setForm} 
-        setModal={setModal} origData={data} 
+        setModal={setModal}
         rows={rows} columns={columns} />
     </>
     )

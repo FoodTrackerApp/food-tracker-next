@@ -31,20 +31,20 @@ const Home = ({ }) => {
 
     if(diffDays > 0) {
       return (
-        <Button onClick={() => handleClick(nextDue._id)} flat color="success">
+        <Button onClick={() => handleClick(nextDue?._id)} flat color="success">
           {`In ${diffDays} ${mod}`}
         </Button>
       )
     } else if(diffDays === 0) {
       // due today
       return (
-        <Button onClick={() => handleClick(nextDue._id)} flat color="warning">
+        <Button onClick={() => handleClick(nextDue?._id)} flat color="warning">
           {`Due today`}
         </Button>
       )
     } else {
       return (
-        <Button onClick={() => handleClick(nextDue._id)} flat color="warning">
+        <Button onClick={() => handleClick(nextDue?._id)} flat color="warning">
           {`Overdue since ${days} ${mod}`}
         </Button>
       )
@@ -53,7 +53,11 @@ const Home = ({ }) => {
 
   const handleClick = (key : any) => {
     console.log(key)
-    const element = origData.find((ele) => ele._id == key);
+    let element = origData?.find((ele : Iitem) => ele._id == key);
+    if(element === undefined) {
+      console.log("Element not found");
+      element = {} as Iitem;
+    }
 
     setForm({...element});
     setIsOpened(true);
@@ -61,20 +65,12 @@ const Home = ({ }) => {
   }
 
   const clearForm = () => {
-    // Make new object from Iitem
-    const newForm : Iitem = {
-      name: "",
-      count: null,
-      date: "",
-      place: "",
-      hasDueDate: false,
-    }
-    setForm(newForm);
+    setForm({} as Iitem);
   }
 
   // Refresh next due data on origData change
   useEffect(() => {
-    if(origData.length > 0) {
+    if(origData?.length && origData.length > 0) {
       setNextDue(CalculateNextDue(origData));
     }
   }, [setNextDue, origData]);
@@ -84,13 +80,13 @@ const Home = ({ }) => {
     fetchData();
   }, []);
 
-  const renderNextDue = origData.length > 0 ? (
+  const renderNextDue = origData?.length && origData.length > 0 ? (
     <Grid>
     <Card>
       <span>Next due</span>
-      <h2>{nextDue.name}</h2>
-      <Tooltip content={nextDue.date} placement="bottom" color="success">
-          {getTimeDiffInDays(parseInt(nextDue.date))}
+      <h2>{nextDue?.name}</h2>
+      <Tooltip content={nextDue?.date} placement="bottom" color="success">
+          {getTimeDiffInDays(parseInt(nextDue?.date ? nextDue.date : "0"))}
       </Tooltip>
     </Card>
   </Grid>
@@ -103,12 +99,18 @@ const Home = ({ }) => {
     console.log("Got data:", data);
   
     // filter out deleted items
-    data = data.filter((ele) => (ele.deleted === null) || (ele.deleted === 0));
+    data = data.filter((ele : Iitem) => (ele.deleted === null));
 
+    if(data.length > 0) {
+    
     // set init values
     setOrigData(data);
     setRows(data);
     setNextDue(CalculateNextDue(data));
+    } else {
+      setOrigData([]);
+      setRows([]);
+    }
   }
 
   return (
