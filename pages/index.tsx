@@ -6,16 +6,21 @@ import TableSection from '../components/TableSection.js';
 import MakeNewModal from '../components/MakeNewModal.js';
 import CalculateNextDue from '../functions/CalculateNextDue.js';
 
-const Home = ({ }) => {
-  // only use data for this, use OrigData from now on
-  const [origData, setOrigData] = useState([]);
-  const [nextDue, setNextDue] = useState({});
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [rows, setRows] = useState([]);
-  const [form, setForm] = useState({name: "", count: "", date: "", place: ""});
-  const [isOpened, setIsOpened] = useState(false);
+// Interfaces
+import Iitem from '../interfaces/Iitem';
 
-  const getTimeDiffInDays = (date) => {
+const Home = ({ }) => {
+
+  const [origData, setOrigData] = useState<Array<Iitem>>();
+  const [rows, setRows] = useState<Array<Iitem>>();
+
+  const [nextDue, setNextDue] = useState<Iitem>();
+  const [form, setForm] = useState<Iitem>();
+
+  const [isOpened, setIsOpened] = useState<Boolean>(false);
+  const [isModalVisible, setIsModalVisible] = useState<Boolean>(false);
+
+  const getTimeDiffInDays = (date : number) => {
     const now = new Date().getTime();
 
     const dueDate = date;
@@ -26,7 +31,6 @@ const Home = ({ }) => {
 
     if(diffDays > 0) {
       return (
-
         <Button onClick={() => handleClick(nextDue._id)} flat color="success">
           {`In ${diffDays} ${mod}`}
         </Button>
@@ -47,7 +51,7 @@ const Home = ({ }) => {
     }
   }
 
-  const handleClick = (key) => {
+  const handleClick = (key : any) => {
     console.log(key)
     const element = origData.find((ele) => ele._id == key);
 
@@ -57,7 +61,15 @@ const Home = ({ }) => {
   }
 
   const clearForm = () => {
-    setForm({name: "", count: "", date: "", place: ""});
+    // Make new object from Iitem
+    const newForm : Iitem = {
+      name: "",
+      count: null,
+      date: "",
+      place: "",
+      hasDueDate: false,
+    }
+    setForm(newForm);
   }
 
   // Refresh next due data on origData change
@@ -78,7 +90,7 @@ const Home = ({ }) => {
       <span>Next due</span>
       <h2>{nextDue.name}</h2>
       <Tooltip content={nextDue.date} placement="bottom" color="success">
-          {getTimeDiffInDays(nextDue.date)}
+          {getTimeDiffInDays(parseInt(nextDue.date))}
       </Tooltip>
     </Card>
   </Grid>
