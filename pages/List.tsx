@@ -35,6 +35,12 @@ export default function List() {
         sync();
     }, [])
 
+    useEffect(() => {
+        if(!modal) {
+            sync();
+        }
+    }, [modal])
+
     const filterData = () => {
         const filteredData = origData?.filter((item) => {
             return !item.deleted;
@@ -66,10 +72,6 @@ export default function List() {
         // Add local
         setOrigData(prevState => [...prevState, newItem])
         setRows(prevState => [...prevState, newItem])
-
-        console.log(rows);
-
-        sync();
     }
 
     // Removes an item from the list
@@ -83,8 +85,6 @@ export default function List() {
         const index = origData?.findIndex(item => item.id == targetId);
         origData[index] = item;
         setOrigData(origData);
-
-        sync();
     }
 
     const editItemHandler = (targetId : string) => {
