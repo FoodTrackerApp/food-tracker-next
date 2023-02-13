@@ -1,21 +1,22 @@
 import Head from 'next/head'
-import { Container, Card, Tooltip, Button, Grid, Spacer, Text} from "@nextui-org/react";
-import { FaQrcode, FaPlusSquare } from "react-icons/fa";
+import { Container, Card, Tooltip, Button, Grid, Spacer, Text, Navbar } from "@nextui-org/react";
+import { FaQrcode, FaPlusSquare, FaShoppingBag, FaHome, FaList, FaDatabase } from "react-icons/fa";
 import { useState, useEffect } from "react";
-import TableSection from '../components/TableSection.js';
-import MakeNewModal from '../components/MakeNewModal.js';
-import CalculateNextDue from '../functions/CalculateNextDue.js';
+import TableSection from '../components/TableSection';
+import MakeNewModal from '../components/MakeNewModal';
+import CalculateNextDue from '../functions/CalculateNextDue';
+import CustomNavbar from '@/components/CustomNavbar';
 
 // Interfaces
 import Iitem from '../interfaces/Iitem';
 
 const Home = ({ }) => {
 
-  const [origData, setOrigData] = useState<Array<Iitem>>();
-  const [rows, setRows] = useState<Array<Iitem>>();
+  const [origData, setOrigData] = useState<Array<Iitem>>([]);
+  const [rows, setRows] = useState<Array<Iitem>>([]);
 
-  const [nextDue, setNextDue] = useState<Iitem>();
-  const [form, setForm] = useState<Iitem>();
+  const [nextDue, setNextDue] = useState<Iitem>({} as Iitem);
+  const [form, setForm] = useState<Iitem>({} as Iitem);
 
   const [isOpened, setIsOpened] = useState<Boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<Boolean>(false);
@@ -29,6 +30,13 @@ const Home = ({ }) => {
     const days = Math.abs(diffDays);
     const mod = days === 1 ? "day" : "days";
 
+    if(diffDays > 10000) {
+      return (
+        <Button onClick={() => handleClick(nextDue?._id)} flat color="success">
+          Has no due date
+        </Button>
+      )
+    }
     if(diffDays > 0) {
       return (
         <Button onClick={() => handleClick(nextDue?._id)} flat color="success">
@@ -66,6 +74,7 @@ const Home = ({ }) => {
 
   const clearForm = () => {
     setForm({} as Iitem);
+    console.log("new form:", form);
   }
 
   // Refresh next due data on origData change
@@ -83,11 +92,13 @@ const Home = ({ }) => {
   const renderNextDue = origData?.length && origData.length > 0 ? (
     <Grid>
     <Card>
-      <span>Next due</span>
-      <h2>{nextDue?.name}</h2>
-      <Tooltip content={nextDue?.date} placement="bottom" color="success">
-          {getTimeDiffInDays(parseInt(nextDue?.date ? nextDue.date : "0"))}
-      </Tooltip>
+      <Card.Body>
+        <span>Next due</span>
+        <h2>{nextDue?.name}</h2>
+        <Tooltip content={nextDue?.date} placement="bottom" color="success">
+            {getTimeDiffInDays(parseInt(nextDue?.date ? nextDue.date : "0"))}
+        </Tooltip>
+      </Card.Body>
     </Card>
   </Grid>
   ) : null
@@ -122,10 +133,7 @@ const Home = ({ }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
       </Head>
       <Container>
-        <Container>
-        <Spacer />
-          <Text h2>FoodTracker</Text>
-        </Container>
+        <CustomNavbar current="Home" />
 
         <MakeNewModal 
           isModalVisible={isModalVisible} 
@@ -143,11 +151,6 @@ const Home = ({ }) => {
           {renderNextDue}
 
           <Grid.Container direction="row" gap={2} justify="center">
-            <Grid>
-              <Button color="success" auto ghost >
-                <FaQrcode style={{ marginRight:"5px"}} />Scan
-              </Button>
-            </Grid>
             <Grid>
               <Button color="success" auto 
                 onPress={(e) => {

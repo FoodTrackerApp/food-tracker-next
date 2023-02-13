@@ -1,5 +1,6 @@
-import { Spacer, Modal, Input, Text, Button, Grid, Loading } from "@nextui-org/react";
+import { Spacer, Modal, Input, Text, Button, Grid, Loading, Checkbox } from "@nextui-org/react";
 import { useState } from "react";
+import { text } from "stream/consumers";
 import FormatTime from "../functions/FormatTime";
 
 import Iitem from "../interfaces/Iitem";
@@ -39,6 +40,11 @@ export default function MakeNewModal({
         let sendBody = {
             ...form,
         }
+
+        if(!form.hasDueDate) {
+            sendBody.date = new Date("2100").getTime();
+        }
+
         // overwrite toUpdate which got carried over from form
         sendBody.toUpdate = isOpened;
 
@@ -57,6 +63,11 @@ export default function MakeNewModal({
             },
             body: JSON.stringify(sendBody)
         });
+
+        if(response.status != 200) {
+            console.log("Got error from fetch", response);
+            return;
+        }
 
         const data = await response.json();
 
@@ -121,23 +132,35 @@ export default function MakeNewModal({
         }
     }
 
+    const isEdit = () : Boolean => {
+        if(form && form.name && form.name.length > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     const renderButton = isLoading ? <Loading size="sm" color="white" /> : saveButtonText
 
     return (
     <>
     <Modal blur closeButton open={isModalVisible} onClose={() => setModalVisible(false)} css={{background: "#00000075", backdropFilter:"blur(10px)"}} >
-        <Modal.Header> <Text id="modal-title" size={18}>{form.name.length == 0 ? "Make new" : `Edit ${form.name}`}</Text></Modal.Header>
+        <Modal.Header> <Text id="modal-title" size={18}>{!isEdit() ? "Add a new Item" : `Edit ${form?.name}`}</Text></Modal.Header>
 
         <Modal.Body>
             <Spacer y={1} />
-            <Input onChange={(e) => textHandler(e, "name" )} required underlined clearable labelPlaceholder='Name'  type="text"   initialValue={form.name}  />
+            <Input onChange={(e) => textHandler(e, "name" )} required underlined clearable labelPlaceholder='Name'  type="text"   initialValue={form?.name}  />
             <Spacer  y={.25} />
-            <Input onChange={(e) => textHandler(e, "count")} required underlined labelPlaceholder='Count' type="number" initialValue={form.count}  />
+            <Input onChange={(e) => textHandler(e, "count")} required underlined labelPlaceholder='Count' type="number" initialValue={form?.count}  />
             <Spacer  y={.25} />
-            <Input onChange={(e) => textHandler(e, "date" )} required underlined labelPlaceholder='Date' type="date" initialValue={FormatTime(form.date, "YYYY-MM-DD").toString()} />
+            <Checkbox isSelected={form.hasDueDate} onChange={(e) => setForm(prevState => ({ ...prevState, ["hasDueDate"]: !form.hasDueDate})) }>Has due date?</Checkbox>
+            {form.hasDueDate ? <>
+                <Spacer y={0.25} />
+                <Input onChange={(e) => textHandler(e, "date" )} required underlined labelPlaceholder='Date' type="date" initialValue={FormatTime(form?.date, "YYYY-MM-DD").toString()} />
+                </> : null    
+            }
             <Spacer  y={.25} />
-            <Input onChange={(e) => textHandler(e, "place")} required underlined clearable labelPlaceholder='Place' type="text"   initialValue={form.place} />
+            <Input onChange={(e) => textHandler(e, "place")} required underlined clearable labelPlaceholder='Place' type="text"   initialValue={form?.place} />
             <Spacer />
 
             <Modal.Footer>

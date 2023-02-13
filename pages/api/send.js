@@ -14,9 +14,9 @@ export default async function handler(req, res) {
     }
 
     if(req.method === 'POST') {
+        console.log("POST request received with type", typeof req.body)
         const reqBody = req.body;
-        const item = JSON.parse(reqBody);
-        console.log("got post request", item);
+        const item = typeof reqBody == "object" ? reqBody : JSON.parse(reqBody);
         try {
             if(!item.toUpdate) {
                 console.log("Adding new item");

@@ -14,6 +14,7 @@ export default function TableSection({ data, rows,
     setModal: (arg0: boolean) => void,
     setIsOpened: (arg0: boolean) => void
   }) {
+
     const [searchTerm, setSearchTerm] = useState("")
 
     const columns : Array<{ key: string, label: string}> =  [

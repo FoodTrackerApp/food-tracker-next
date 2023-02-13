@@ -1,20 +1,11 @@
 import { Table, Container, Tooltip, useAsyncList, useCollator } from "@nextui-org/react";
 import { useEffect } from "react";
-import FormatTime from "../functions/FormatTime.jsx";
-
-import Iitem from "../interfaces/Iitem.jsx";
+import FormatTime from "../functions/FormatTime";
 
 export default function ItemTable({ rows, columns, 
-  setForm, setModal, setIsOpened } : {
-    rows: Array<Iitem> | undefined,
-    columns: Array<{ key: string, label: string}>,
+  setForm, setModal, setIsOpened }) {
 
-    setForm: (arg0: Iitem | undefined) => void,
-    setModal: (arg0: boolean) => void,
-    setIsOpened: (arg0: boolean) => void
-  }) {
-
-  const renderCell = (item : any, key : any) => {
+  const renderCell = (item, key) => {
     const cellValue = item[key];
     switch(key) {
       case "name":
@@ -31,36 +22,29 @@ export default function ItemTable({ rows, columns,
     }
   }
 
-  const handleSelect = (key : any) => {
+  const handleSelect = (key) => {
     const selectedEle = rows?.find(item => item._id == key);
 
     // set form to selected item
-    setForm({...selectedEle as Iitem});
+    setForm({...selectedEle});
     setIsOpened(true)
     setModal(true)
   }
 
-  async function load({ searchTerm } : { searchTerm: string }) {
+  async function load({ searchTerm }) {
     if(searchTerm) {
       return {
-        items: rows?.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        items: rows.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
       }
     } else { return { items: rows } }
-  }
-
-  const convertDateToTime = (date : string) => {
-    // tage date string in DD.MM.YYYY format
-    // return time string in ms from 1970
-    const dateString = date.split(".")
-    return new Date(parseInt(dateString[2]), parseInt(dateString[1])-1, parseInt(dateString[0])).getTime();
   }
 
   // Sorting stuff
   const collator = useCollator({numeric: true});
 
-  async function sort({ items, sortDescriptor } : { items: Array<Iitem>, sortDescriptor: any }) {
+  async function sort({ items, sortDescriptor }) {
     return {
-      items: items.sort((a : any , b : any) => {
+      items: items.sort((a, b) => {
         let first = a[sortDescriptor.column];
         let second = b[sortDescriptor.column];
 
@@ -88,20 +72,20 @@ export default function ItemTable({ rows, columns,
       selectionMode="single"
       selectionBehavior="replace"
       color="success"
-      onRowAction={(key : any) => handleSelect(key)}
+      onRowAction={(key) => handleSelect(key)}
       sortDescriptor={list.sortDescriptor}
       onSort={list.sort}
       onSortChange={list.sort}
     >
       <Table.Header columns={columns}>
-        {(column : any) => (
+        {(column) => (
           <Table.Column key={column.key} allowsSorting >{column.label}</Table.Column>
         )}
       </Table.Header>
       <Table.Body items={list.items} loadingState={list.loadingState} >
-        {(item : Iitem) => (
+        {(item) => (
           <Table.Row key={item._id}>
-            {(columnKey : any) => <Table.Cell>{renderCell(item, columnKey)}</Table.Cell>}
+            {(columnKey) => <Table.Cell>{renderCell(item, columnKey)}</Table.Cell>}
           </Table.Row>
         )}
       </Table.Body>

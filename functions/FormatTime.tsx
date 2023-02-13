@@ -21,6 +21,39 @@ const dateDay = (date : Date) => {
 }
 
 /**
+ * @description Takes Date Object. Returns Hours in format HH (will add a 0 if hours is < 10)
+ * @param date : Date
+ * @returns
+ */
+const dateHours = (date : Date) => {
+  if(date.getHours() < 10) {
+      return `0${date.getHours()}`
+  } else { return date.getHours() }
+}
+
+/**
+ * @description Takes Date Object. Returns Minutes in format MM (will add a 0 if minutes is < 10)
+ * @param date : Date
+ * @returns 
+ */
+const dateMinutes = (date : Date) => {
+  if(date.getMinutes() < 10) {
+      return `0${date.getMinutes()}`
+  } else { return date.getMinutes() }
+}
+
+/**
+ * @description Takes Date Object. Returns Seconds in format SS (will add a 0 if seconds is < 10) 
+ * @param date : Date
+ * @returns 
+ */
+const dateSeconds = (date : Date) => {
+  if(date.getSeconds() < 10) {
+      return `0${date.getSeconds()}`
+  } else { return date.getSeconds() }
+}
+
+/**
  * @description Takes date in time. Outputs string in format DD.MM.YYYY
  * @param {*} date 
  * @param {*} outFormat 
@@ -38,3 +71,5 @@ export default function FormatTime(date : (string | number | Date), outFormat = 
       return date
   }
 }
+
+export { dateDay, dateMonth, dateHours, dateMinutes, dateSeconds }

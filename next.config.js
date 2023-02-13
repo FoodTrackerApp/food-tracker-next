@@ -11,6 +11,9 @@ module.exports = withPlugins([
       dest: 'public',
     },
      reactStrictMode: true,
+     env: {
+      BASE_URL: process.env.BASE_URL
+     }
   },
  
 ])
