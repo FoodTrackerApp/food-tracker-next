@@ -1,6 +1,6 @@
 {
-    "name": "Closed[in]",
-    "short_name": "Closed[in]",
+    "name": "FoodTracker",
+    "short_name": "FoodTracker",
     "icons": [
       {
         "src": "/icons/android-chrome-192x192.png",

@@ -21,7 +21,7 @@ class MyDocument extends Document {
         <meta name='apple-mobile-web-app-capable' content='yes' />
         <meta name='apple-mobile-web-app-status-bar-style' content='default' />
         <meta name='apple-mobile-web-app-title' content='FoodTracker' />
-        <meta name='description' content='Tech and Maths Blog' />
+        <meta name='description' content='Track your food Items' />
         <meta name='format-detection' content='telephone=no' />
         <meta name='mobile-web-app-capable' content='yes' />
         <meta name='msapplication-config' content='/icons/browserconfig.xml' />
@@ -43,12 +43,12 @@ class MyDocument extends Document {
         <meta name='twitter:card' content='summary' />
         <meta name='twitter:url' content='https://close-up-blog.vercel.app/' />
         <meta name='twitter:title' content='FoodTracker' />
-        <meta name='twitter:description' content='Tech and Maths Blog ' />
+        <meta name='twitter:description' content='Track your food Items' />
         <meta name='twitter:image' content='https://close-up-blog.vercel.app/icons/android-chrome-192x192.png' />
         <meta name='twitter:creator' content='@Cr4yfish' />
         <meta property='og:type' content='website' />
         <meta property='og:title' content='FoodTracker' />
-        <meta property='og:description' content='Tech and Maths Blog ' />
+        <meta property='og:description' content='Track your food Items' />
         <meta property='og:site_name' content='FoodTracker' />
         <meta property='og:url' content='https://close-up-blog.vercel.app' />
         <meta property='og:image' content='https://close-up-blog.vercel.app/icons/apple-touch-icon.png' />
