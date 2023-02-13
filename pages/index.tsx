@@ -1,11 +1,11 @@
 import Head from 'next/head'
-import { Container, Card, Tooltip, Button, Grid, Spacer, Text, Navbar } from "@nextui-org/react";
-import { FaQrcode, FaPlusSquare, FaShoppingBag, FaHome, FaList, FaDatabase } from "react-icons/fa";
+import { Container, Card, Tooltip, Button, Grid } from "@nextui-org/react";
+import { FaPlusSquare } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import TableSection from '../components/TableSection';
 import MakeNewModal from '../components/MakeNewModal';
 import CalculateNextDue from '../functions/CalculateNextDue';
-import { getSupabaseClient, _DATABASE_NAME_ITEMS, uuidGen } from '@/functions/SupabaseClient';
+import { getSupabaseClient, _DATABASE_NAME_ITEMS } from '@/functions/SupabaseClient';
 import CustomNavbar from '@/components/CustomNavbar';
 
 // Interfaces

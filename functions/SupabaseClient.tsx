@@ -5,6 +5,12 @@ const _DATABASE_NAME_SHOPPING_LIST = "shoppingList";
 const _DATABASE_NAME_PERSONS = "persons";
 const _DATABASE_NAME_ITEMS = "items";
 
+/**
+ * @description Generates a supabase client
+ * @param url : string
+ * @param key : string
+ * @returns supabase client
+ */
 const getSupabaseClient = (url: string, key: string) => {
     try {
         console.log("Generating supabase client", url, key)

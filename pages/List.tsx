@@ -10,7 +10,7 @@ import IShoppingListItem from '@/interfaces/IShoppingListItem';
 import IPerson from '@/interfaces/IPerson';
 import ISettings from '@/interfaces/ISettings';
 
-import { FaAd, FaAmericanSignLanguageInterpreting, FaCheck, FaClock, FaPen, FaPlus, FaRecycle, FaRegArrowAltCircleRight, FaTrash } from 'react-icons/fa';
+import { FaCheck, FaPen, FaPlus, FaTrash } from 'react-icons/fa';
 import { MdRotateLeft } from "react-icons/md"
 
 export default function List() {
