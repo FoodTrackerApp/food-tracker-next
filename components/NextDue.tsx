@@ -17,7 +17,7 @@ export default function NextDue({ nextDue, handleClick } : { nextDue : Iitem, ha
                 <Card.Body>
                     <span>Next due</span>
                     <h2>{nextDue?.name}</h2>
-                    <Tooltip content={nextDue?.date} placement="bottom" color="success">
+                    <Tooltip content={new Date(nextDue?.date).toUTCString()} placement="bottom" color="success">
                         {GetTimeDiffInDays({date: nextDue?.date ? nextDue.date : 0, handleClick: handleClick, nextDue: nextDue})}
                     </Tooltip>
                 </Card.Body>
