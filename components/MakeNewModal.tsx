@@ -34,10 +34,8 @@ export default function MakeNewModal({
         }
     }, [isModalVisible])
 
-    const addItem = () => {
-        setIsLoading(true);
-        setSaveButtonText("Saving...");
-        
+
+    const createNewItem = () : Iitem => {
         const newItem : Iitem = form;
 
         // get date in format: 2023-02-12T22:36:08.346256+00:00
@@ -58,11 +56,49 @@ export default function MakeNewModal({
 
         newItem.id = uuidGen();
 
-        console.log("New item:" , newItem);
+        return newItem;
+    }
 
-        setRows((prevState : Array<Iitem>) => [...prevState, newItem])
-        setOrigData((prevState : Array<Iitem>) => [...prevState, newItem])
-        setCleanData((prevState : Array<Iitem>) => [...prevState, newItem]);
+    const addItem = () => {
+        setIsLoading(true);
+        setSaveButtonText("Saving...");
+        
+        let newItem : Iitem;
+
+        if(isEdit()) {
+            newItem = form;
+            newItem.datemodified = new Date().getTime();
+            newItem.date = new Date(newItem.date).getTime();
+
+            setOrigData((prevState : Array<Iitem>) => prevState.map((ele : Iitem) => {
+                if(ele.id === newItem.id) {
+                    return newItem;
+                } else {
+                    return ele;
+                }
+            }))
+            setRows((prevState : Array<Iitem>) => prevState.map((ele : Iitem) => {
+                if(ele.id === newItem.id) {
+                    return newItem;
+                } else {
+                    return ele;
+                }
+            }))
+            setCleanData((prevState : Array<Iitem>) => prevState.map((ele : Iitem) => {
+                if(ele.id === newItem.id) {
+                    return newItem;
+                } else {
+                    return ele;
+                }
+            }))
+        } else {
+            newItem  = createNewItem();
+            setRows((prevState : Array<Iitem>) => [...prevState, newItem])
+            setOrigData((prevState : Array<Iitem>) => [...prevState, newItem])
+            setCleanData((prevState : Array<Iitem>) => [...prevState, newItem]);
+        }
+
+        console.log("New item:" , newItem);
 
         setIsLoading(false);
         setModalVisible(false);
