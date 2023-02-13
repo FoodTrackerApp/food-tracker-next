@@ -37,10 +37,12 @@ export default function TableSection({ data, rows,
     ]
 
     useEffect(() => {
-        if(searchTerm.length > 0) {
-          const filteredRows = data?.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
-          setRows(filteredRows)
-        } else { setRows(data) }
+      if(searchTerm.length > 0) {
+        const filteredRows = data?.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        setRows(filteredRows)
+      } else { 
+        setRows(data) 
+      }
       }, [searchTerm, data, setRows])
 
     return (

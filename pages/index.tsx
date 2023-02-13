@@ -2,11 +2,16 @@ import Head from 'next/head'
 import { Container, Card, Tooltip, Button, Grid } from "@nextui-org/react";
 import { FaPlusSquare } from "react-icons/fa";
 import { useState, useEffect } from "react";
-import TableSection from '../components/TableSection';
-import MakeNewModal from '../components/MakeNewModal';
-import CalculateNextDue from '../functions/CalculateNextDue';
-import { getSupabaseClient, _DATABASE_NAME_ITEMS } from '@/functions/SupabaseClient';
+
+
+import TableSection from '@/components/TableSection';
+import MakeNewModal from '@/components/MakeNewModal';
 import CustomNavbar from '@/components/CustomNavbar';
+import NextDue from '@/components/NextDue';
+
+import CalculateNextDue from '@/functions/CalculateNextDue';
+import { getSupabaseClient, _DATABASE_NAME_ITEMS } from '@/functions/SupabaseClient';
+import { SyncItems } from '@/functions/Sync';
 
 // Interfaces
 import Iitem from '../interfaces/Iitem';
@@ -16,6 +21,7 @@ const Home = ({ }) => {
 
   const [origData, setOrigData] = useState<Array<Iitem>>([]);
   const [rows, setRows] = useState<Array<Iitem>>([]);
+  const [cleanData, setCleanData] = useState<Array<Iitem>>([]);
 
   const [nextDue, setNextDue] = useState<Iitem>({} as Iitem);
   const [form, setForm] = useState<Iitem>({} as Iitem);
@@ -27,46 +33,7 @@ const Home = ({ }) => {
 
   const [isOnline, setIsOnline] = useState<boolean>(false);
 
-  const getTimeDiffInDays = (date : number) => {
-    const now = new Date().getTime();
-
-    const dueDate = date;
-    const timeDiff = dueDate - now;
-    const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    const days = Math.abs(diffDays);
-    const mod = days === 1 ? "day" : "days";
-
-    if(diffDays > 10000) {
-      return (
-        <Button onClick={() => handleClick(nextDue?.id)} flat color="success">
-          Has no due date
-        </Button>
-      )
-    }
-    if(diffDays > 0) {
-      return (
-        <Button onClick={() => handleClick(nextDue?.id)} flat color="success">
-          {`In ${diffDays} ${mod}`}
-        </Button>
-      )
-    } else if(diffDays === 0) {
-      // due today
-      return (
-        <Button onClick={() => handleClick(nextDue?.id)} flat color="warning">
-          {`Due today`}
-        </Button>
-      )
-    } else {
-      return (
-        <Button onClick={() => handleClick(nextDue?.id)} flat color="warning">
-          {`Overdue since ${days} ${mod}`}
-        </Button>
-      )
-    }
-  }
-
   const handleClick = (key : any) => {
-    console.log(key)
     let element = origData?.find((ele : Iitem) => ele.id == key);
     if(element === undefined) {
       console.log("Element not found");
@@ -85,67 +52,22 @@ const Home = ({ }) => {
 
   // Refresh next due data on origData change
   useEffect(() => {
+    console.log("OrigData changed")
     if(origData?.length && origData.length > 0) {
-      setNextDue(CalculateNextDue(origData));
+      const dataNoDeleted = origData.filter((ele : Iitem) => (ele.deleted === false));
+      setNextDue(CalculateNextDue(dataNoDeleted));
     }
   }, [setNextDue, origData]);
 
   // fetch data on load
   useEffect(() => {
     if(window !== undefined) {
-      sync();
+      sync()
     }
   }, []);
 
-  const renderNextDue = origData?.length && origData.length > 0 ? (
-    <Grid>
-    <Card>
-      <Card.Body>
-        <span>Next due</span>
-        <h2>{nextDue?.name}</h2>
-        <Tooltip content={nextDue?.date} placement="bottom" color="success">
-            {getTimeDiffInDays(nextDue?.date ? nextDue.date : 0)}
-        </Tooltip>
-      </Card.Body>
-    </Card>
-  </Grid>
-  ) : null
-
-  const sync = async () => {
-    console.log("Syncing data");
-
-    console.log("Getting settings");
-    const settingsResponse = localStorage.getItem("settings");
-    if(settingsResponse) {
-      setSettings(JSON.parse(settingsResponse));
-    } else {
-      console.log("No settings found");
-      return;
-    }
-
-    const supabase = getSupabaseClient(settings.supabaseUrl, settings.supabaseKey);
-
-    if(!supabase) { 
-      console.log("No supabase client found");
-      setIsOnline(false);
-      return;
-    }
-
-    console.log("OrigData:" , origData);
-
-    const { data: updatedData, error } = await supabase.from(_DATABASE_NAME_ITEMS).upsert(origData).select()
-    console.log("Upserted Data from supabase:", updatedData, error);
-
-    const { data: newItems, error: err } = await supabase.from(_DATABASE_NAME_ITEMS).select('*')
-    console.log("new items from supabase:", newItems, err);
-
-    if(newItems) {
-      setOrigData(newItems);
-      const noDeleted = newItems.filter((ele : Iitem) => (ele.deleted === false));
-      setRows(noDeleted);
-      setNextDue(CalculateNextDue(newItems));
-      setIsOnline(true);
-    }
+  const sync = () => {
+    SyncItems({ settings, setSettings, origData, setOrigData, setRows, setNextDue, setIsOnline, setCleanData});
   }
 
   return (
@@ -159,7 +81,7 @@ const Home = ({ }) => {
       <Container>
         <CustomNavbar current="Home" online={isOnline} />
 
-        <MakeNewModal 
+        <MakeNewModal
           isModalVisible={isModalVisible} 
           setModalVisible={setIsModalVisible} 
           setRows={setRows}
@@ -169,11 +91,12 @@ const Home = ({ }) => {
           form={form}
           isOpened={isOpened}
           syncData={sync}
+          setCleanData={setCleanData}
         />
 
         <Grid.Container gap={2} justify="center" direction='column'>
           
-          {renderNextDue}
+          { cleanData?.length && cleanData.length > 0 ? (<NextDue nextDue={nextDue} handleClick={handleClick} />) : null }
 
           <Grid.Container direction="row" gap={2} justify="center">
             <Grid>
@@ -197,7 +120,7 @@ const Home = ({ }) => {
 
       <TableSection 
         setForm={setForm} setModal={setIsModalVisible} 
-        data={origData} rows={rows} 
+        data={cleanData} rows={rows} 
         setRows={setRows} setIsOpened={setIsOpened}
       />
     </div>

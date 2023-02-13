@@ -1,17 +1,23 @@
 import React from 'react'
 import { Button, Container, Card, Text, Modal, Input, Spacer, Dropdown, Collapse } from "@nextui-org/react";
 import { useState, useEffect } from "react";
+import { FaCheck, FaPen, FaPlus, FaTrash } from 'react-icons/fa';
+import { MdRotateLeft } from "react-icons/md"
+
+
 import { uuidGen, _DATABASE_NAME_PERSONS, _DATABASE_NAME_SHOPPING_LIST, getSupabaseClient } from '@/functions/SupabaseClient';
+import { dateDay, dateMinutes, dateMonth, dateHours, dateSeconds } from '@/functions/FormatTime';
+import textHandler from '@/functions/TextHandler';
+import { SyncList } from '@/functions/Sync';
+
 
 import CustomNavbar from '@/components/CustomNavbar';
-import { dateDay, dateMinutes, dateMonth, dateHours, dateSeconds } from '@/functions/FormatTime';
+
 
 import IShoppingListItem from '@/interfaces/IShoppingListItem';
 import IPerson from '@/interfaces/IPerson';
 import ISettings from '@/interfaces/ISettings';
 
-import { FaCheck, FaPen, FaPlus, FaTrash } from 'react-icons/fa';
-import { MdRotateLeft } from "react-icons/md"
 
 export default function List() {
     const [origData, setOrigData] = useState<Array<IShoppingListItem> | undefined>([]);
@@ -40,45 +46,7 @@ export default function List() {
      * Syncs the local data with the supabase database
     */
     const sync = async () => {
-        console.log("Syncing");
-
-        console.log("Getting settings");
-        const settingsResponse = localStorage.getItem("settings");
-        if(settingsResponse) {
-            setSettings(JSON.parse(settingsResponse));
-            console.log("Got settings", settings);
-        } else {
-            console.log("No settings found");
-            setIsOnline(false)
-            return;
-        }
-
-        console.log("Getting supabase client");
-        const supabase = getSupabaseClient(settings.supabaseUrl, settings.supabaseKey);
-
-        if(!supabase) { 
-            console.log("No supabase client found");
-            setIsOnline(false);
-            return;
-        }
-
-        const { data: updatedData, error } = await supabase.from(_DATABASE_NAME_SHOPPING_LIST).upsert(origData).select()
-        console.log("Upserted Data from supabase:", updatedData, error);
-
-        const { data: shoppingList, error: err } = await supabase.from(_DATABASE_NAME_SHOPPING_LIST).select('*')
-        console.log("Shopping list from supabase:", shoppingList, err);
-
-        if(shoppingList) {
-            setOrigData(shoppingList);
-            filterData();
-        }
-
-        const { data: persons, error: err2 } = await supabase.from(_DATABASE_NAME_PERSONS).select('*')
-        console.log("Persons from supabase:", persons, err2);
-        setPersonRows(persons);
-        setIsOnline(true);
-        console.log("Synced");
-        
+        SyncList({ settings, setSettings, origData, setOrigData, filterData, setPersonRows, setIsOnline }); 
     }
 
     const addItemHandler = () => {
@@ -144,15 +112,6 @@ export default function List() {
         sync();
     }
 
-    const textHandler = (e, name) => {
-        let value = e.target.value;
-        
-        setForm(prevState => ({
-            ...prevState,
-            [name]: value
-        }))
-    }
-
     const closeHandler =() => {
         setModal(false);
         console.log("closed");
@@ -163,11 +122,6 @@ export default function List() {
         setDropdownSelected(new Set(["Set support by"]));
         setModal(true);
         console.log("opened");
-    }
-
-    const dropdownChangeHandler = (e) => {
-        console.log("changed", e);
-
     }
 
     const selectedValue = React.useMemo(
@@ -185,10 +139,10 @@ export default function List() {
                 <Modal.Header>Add new item</Modal.Header>
                 <Modal.Body>
                     <Spacer y={.25} />
-                    <Input onChange={(e) => textHandler(e, "name" )} required underlined clearable labelPlaceholder='Name'  type="text" initialValue={form?.name}  />
+                    <Input onChange={(e) => textHandler(e, "name", setForm )} required underlined clearable labelPlaceholder='Name'  type="text" initialValue={form?.name}  />
                     <Spacer  y={.25} />
 
-                    <Input onChange={(e) => textHandler(e, "count" )} required underlined clearable labelPlaceholder='Count'  type="number" initialValue={form?.count?.toString()}  />
+                    <Input onChange={(e) => textHandler(e, "count", setForm )} required underlined clearable labelPlaceholder='Count'  type="number" initialValue={form?.count?.toString()}  />
                     <Spacer  y={.25} />
 
                     <Dropdown>

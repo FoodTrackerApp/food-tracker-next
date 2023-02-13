@@ -23,8 +23,7 @@ export default function ItemTable({ rows, columns,
   }
 
   const handleSelect = (key) => {
-    const selectedEle = rows?.find(item => item._id == key);
-
+    const selectedEle = rows?.find(item => item.id == key);
     // set form to selected item
     setForm({...selectedEle});
     setIsOpened(true)
@@ -84,7 +83,7 @@ export default function ItemTable({ rows, columns,
       </Table.Header>
       <Table.Body items={list.items} loadingState={list.loadingState} >
         {(item) => (
-          <Table.Row key={item._id}>
+          <Table.Row key={item.id}>
             {(columnKey) => <Table.Cell>{renderCell(item, columnKey)}</Table.Cell>}
           </Table.Row>
         )}

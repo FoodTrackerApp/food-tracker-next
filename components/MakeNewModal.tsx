@@ -1,11 +1,11 @@
 import { Spacer, Modal, Input, Text, Button, Grid, Loading, Checkbox } from "@nextui-org/react";
-import { useState } from "react";
-import FormatTime, { dateDay, dateHours, dateMinutes, dateMonth, dateSeconds } from "../functions/FormatTime";
+import { useState, useEffect } from "react";
 
-import { getSupabaseClient, _DATABASE_NAME_ITEMS, uuidGen } from "@/functions/SupabaseClient";
+import FormatTime, { dateDay, dateHours, dateMinutes, dateMonth, dateSeconds } from "@/functions/FormatTime";
+import { _DATABASE_NAME_ITEMS, uuidGen } from "@/functions/SupabaseClient";
+import textHandler from "@/functions/TextHandler";
 
-import Iitem from "../interfaces/Iitem";
-import ISettings from "@/interfaces/ISettings";
+import Iitem from "@/interfaces/Iitem";
 
 export default function MakeNewModal({ 
     isModalVisible, 
@@ -16,98 +16,23 @@ export default function MakeNewModal({
     form, 
     setForm, 
     isOpened,
-    syncData
+    syncData,
+    setCleanData
     }) {
 
     const [isLoading, setIsLoading] = useState(false);
     const [errorState, setErrorState] = useState<"default" | "primary" | "secondary" | "success" | "warning" | "error" | "gradient">("primary");
     const [saveButtonText, setSaveButtonText] = useState("Save");
 
-    const [settings, setSettings] = useState<ISettings>({} as ISettings);
+    useEffect(() => {
+        setIsLoading(false);
+    }, [])
 
-    const textHandler = (e, name) => {
-        let value = e.target.value;
-
-        // convert date to date object
-        if(name === "date") {
-            value = new Date(value).getTime();
+    useEffect(() => {
+        if(!isModalVisible) {
+            syncData();
         }
-        
-        setForm(prevState => ({
-            ...prevState,
-            [name]: value
-        }))
-    }
-
-    const submitForm = async () => {
-        setErrorState("primary");
-
-        let sendBody = {
-            ...form,
-        }
-
-        if(!form.hasDueDate) {
-            sendBody.date = new Date("2100").getTime();
-        }
-
-        // overwrite toUpdate which got carried over from form
-        sendBody.toUpdate = isOpened;
-
-        // add last mod date
-        sendBody.datemodified = new Date().getTime();
-
-        // add deleted prop, set to null
-        sendBody.deleted = null;
-
-        console.log("Sending:", sendBody);
-
-        const response = await fetch(`api/send/`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(sendBody)
-        });
-
-        if(response.status != 200) {
-            console.log("Got error from fetch", response);
-            return;
-        }
-
-        const data = await response.json();
-
-        if(data.success) {
-            setModalVisible(false);
-            if(!isOpened) {
-                // Append new Item to states
-                const newItem = { name: data.name, date: data.date, place: data.place, count: data.count, _id: data._id }
-                // append new item to rows and origData (for searching)
-                setRows(prevState => [...prevState, newItem])
-                setOrigData(prevState => [...prevState, newItem])
-            } else {
-                // modify item in rows and origData
-                const updatedItem = form;
-
-                const index = origData.findIndex(item => item._id === updatedItem._id);
-                setRows(prevState => {
-                    prevState[index] = updatedItem;
-                    return [...prevState]
-                })
-                setOrigData(prevState => {
-                    prevState[index] = updatedItem;
-                    return [...prevState]
-                })
-            }
-            
-            setIsLoading(false);
-            setSaveButtonText("Save");
-        } else {
-            console.log("Got error from fetch", data);
-            setIsLoading(false);
-            setErrorState("error");
-            setSaveButtonText("Error! Try again");
-        }
-    }
+    }, [isModalVisible])
 
     const addItem = () => {
         setIsLoading(true);
@@ -124,6 +49,9 @@ export default function MakeNewModal({
         
         if(!newItem.hasDueDate) {
             newItem.date = new Date("2100").getTime();
+            newItem.hasDueDate = false;
+        } else {
+            newItem.date = new Date(newItem.date).getTime();
         }
 
         newItem.datemodified = new Date().getTime();
@@ -132,42 +60,47 @@ export default function MakeNewModal({
 
         console.log("New item:" , newItem);
 
-        setRows(prevState => [...prevState, newItem])
-        setOrigData(prevState => [...prevState, newItem])
-
-        console.log("OrigData in makenewmodal:", origData);
+        setRows((prevState : Array<Iitem>) => [...prevState, newItem])
+        setOrigData((prevState : Array<Iitem>) => [...prevState, newItem])
+        setCleanData((prevState : Array<Iitem>) => [...prevState, newItem]);
 
         setIsLoading(false);
         setModalVisible(false);
         setSaveButtonText("Save");
+
     }
 
     const deleteForm = async () => {
+        console.log("Deleting item...")
 
-        const response = await fetch(`/api/delete`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(form)
-        });
+        const newItem : Iitem = form;
+        newItem.deleted = true;
 
-        const data = await response.json();
+        console.log("item to delete:", newItem);
 
-        if(data.success) {
-            setModalVisible(false);
-            //const newItem = { name: data.name, date: data.date, group: data.group, count: data.count, _id: data._id }
-            // append new item to rows and origData (for searching)
+        setOrigData((prevState : Array<Iitem>) => prevState.map((ele : Iitem) => {
+            if(ele.id === newItem.id) {
+                return newItem;
+            } else {
+                return ele;
+            }
+        }))
 
-            setRows(prevState => prevState.filter(item => item._id !== form._id))
-            setOrigData(prevState =>prevState.filter(item => item._id !== form._id))
-            //setIsLoading(false);
-        } else {
-            console.log(data.error);
-            //setIsLoading(false)
-            setErrorState("error");
-            setSaveButtonText("Error! Try again")
-        }
+        setRows((prevState : Array<Iitem>) => prevState.map((ele : Iitem) => {	
+            if(ele.id !== newItem.id) {	
+                return ele;	
+            }
+        }))
+
+        setCleanData((prevState : Array<Iitem>) => prevState.map((ele : Iitem) => {
+            if(ele.id !== newItem.id) {
+                return ele;
+            }
+        }))
+
+        setModalVisible(false);
+        setIsLoading(false);
+        setSaveButtonText("Save");
     }
 
     const isEdit = () : Boolean => {
@@ -187,18 +120,18 @@ export default function MakeNewModal({
 
         <Modal.Body>
             <Spacer y={1} />
-            <Input onChange={(e) => textHandler(e, "name" )} required underlined clearable labelPlaceholder='Name'  type="text"   initialValue={form?.name}  />
+            <Input onChange={(e) => textHandler(e, "name", setForm )} required underlined clearable labelPlaceholder='Name'  type="text"   initialValue={form?.name}  />
             <Spacer  y={.25} />
-            <Input onChange={(e) => textHandler(e, "count")} required underlined labelPlaceholder='Count' type="number" initialValue={form?.count}  />
+            <Input onChange={(e) => textHandler(e, "count", setForm )} required underlined labelPlaceholder='Count' type="number" initialValue={form?.count}  />
             <Spacer  y={.25} />
             <Checkbox isSelected={form.hasDueDate} onChange={(e) => setForm(prevState => ({ ...prevState, ["hasDueDate"]: !form.hasDueDate})) }>Has due date?</Checkbox>
             {form.hasDueDate ? <>
                 <Spacer y={0.25} />
-                <Input onChange={(e) => textHandler(e, "date" )} required underlined labelPlaceholder='Date' type="date" initialValue={FormatTime(form?.date, "YYYY-MM-DD").toString()} />
+                <Input onChange={(e) => textHandler(e, "date", setForm )} required underlined labelPlaceholder='Date' type="date" initialValue={FormatTime(form?.date, "YYYY-MM-DD").toString()} />
                 </> : null    
             }
             <Spacer  y={.25} />
-            <Input onChange={(e) => textHandler(e, "place")} required underlined clearable labelPlaceholder='Place' type="text"   initialValue={form?.place} />
+            <Input onChange={(e) => textHandler(e, "place", setForm)} required underlined clearable labelPlaceholder='Place' type="text"   initialValue={form?.place} />
             <Spacer />
 
             <Modal.Footer>
