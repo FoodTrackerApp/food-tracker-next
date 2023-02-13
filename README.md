@@ -77,7 +77,7 @@ Stop the running instance
 ```sh
 npm install pm2 -g
 ```
-- Add z2m to pm2
+- Add food-tracker-next to pm2
 ```sh
 pm2 start npm --name foodTracker -- start
 pm2 save
@@ -89,9 +89,9 @@ pm2 start foodTracker
 
 ## Development
 
-For local development I recommend changing the IP to localhost
-```js
-const host = "http://localhost:30010";
+To run the dev server:
+```sh
+npm run dev
 ```
 
 
