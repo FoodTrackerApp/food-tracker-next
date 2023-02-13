@@ -144,10 +144,6 @@ export default function Settings() {
 
             <Container style={{ display: "flex", flexDirection: "column", gap: ".5rem", marginTop: "1rem" }} >
                 <Spacer y={0.5} />
-                <Input onChange={(e) => setSettings(prevState => ({...prevState, ["ip"]: e.target.value}))} value={settings.ip} labelPlaceholder="IP" clearable underlined type="text" initialValue={settings?.ip} />
-                <Spacer y={0.75} />
-                <Input onChange={(e) => setSettings(prevState => ({...prevState, ["port"]: e.target.value}))} value={settings.port} labelPlaceholder="Port" clearable underlined type="text" initialValue={settings?.port} />
-                <Spacer y={0.75} />
                 <Input onChange={(e) => setSettings(prevState => ({...prevState, ["supabaseUrl"]: e.target.value}))} value={settings.supabaseUrl} labelPlaceholder="Supabase URL" clearable underlined type="text" initialValue={settings?.supabaseUrl} />
                 <Spacer y={0.75} />
                 <Input onChange={(e) => setSettings(prevState => ({...prevState, ["supabaseKey"]: e.target.value}))} value={settings.supabaseKey} labelPlaceholder="Supabase Key" clearable underlined type="text" initialValue={settings?.supabaseKey} />
