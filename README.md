@@ -1,5 +1,5 @@
 # Food Tracker (next)
-FoodTracker is a locally hosted Web App that can Track Food Items
+FoodTracker is a (partly) locally hosted Web App that can Track Food Items
 
 For the App integration, go to [FoodTrackerApp]
 
@@ -22,28 +22,38 @@ FoodTracker next uses these technologies:
 
 ## Installation
 
-### 1. Download the repo via GitHub CLI
+### 1. Download the repo via GitHub CLI and install deps
 
 ```sh
 gh repo clone cr4yfish/food-tracker-next
 ```
+```sh 
+cd food-tracker-next
+```
 
-### 2. Change the IP the frontend will call to
+You should use yarn for now, since there is an issue with @react-aria and npm.
 ```sh
-cd food-tracker-next/constants
-nano hosts.js
+yarn
 ```
-- Change the follwing line.
 
-```js
-const host = "http://[YOUR IP ADDRESS]:30010";
-```
-If you are running FoodTracker on a Pi, for example, you should insert the Pi's IP.
-To find out your IP on Linux (which a PI is running on).
+### 2. Configure Supabase
+To use the shopping list, you will need to set-up 2 tables in a supabase database:
+* shoppingList
+* persons
+
+The table specs can be seen in @interfaces/IShoppingListItem and @interfaces/IPerson.
+
+After that, you just need to make a local env like this:
 ```sh
-hostname -I
+touch .env.local
 ```
-Make sure to use an upper-case "i".
+Then, put this in there with the editor of your choice:
+```env
+NEXT_PUBLIC_DB_KEY="[your api key from supabase]"
+```
+If you're unsure where to find the API key, go to the supabase API docs.
+
+(Note: This will change in near future with coming security improvements)
 
 ### 3. Build and start the Server
 
@@ -67,7 +77,7 @@ Stop the running instance
 ```sh
 npm install pm2 -g
 ```
-- Add z2m to pm2
+- Add food-tracker-next to pm2
 ```sh
 pm2 start npm --name foodTracker -- start
 pm2 save
@@ -79,9 +89,9 @@ pm2 start foodTracker
 
 ## Development
 
-For local development I recommend changing the IP to localhost
-```js
-const host = "http://localhost:30010";
+To run the dev server:
+```sh
+npm run dev
 ```
 
 
