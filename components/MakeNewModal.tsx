@@ -1,9 +1,11 @@
 import { Spacer, Modal, Input, Text, Button, Grid, Loading, Checkbox } from "@nextui-org/react";
 import { useState } from "react";
-import { text } from "stream/consumers";
-import FormatTime from "../functions/FormatTime";
+import FormatTime, { dateDay, dateHours, dateMinutes, dateMonth, dateSeconds } from "../functions/FormatTime";
+
+import { getSupabaseClient, _DATABASE_NAME_ITEMS, uuidGen } from "@/functions/SupabaseClient";
 
 import Iitem from "../interfaces/Iitem";
+import ISettings from "@/interfaces/ISettings";
 
 export default function MakeNewModal({ 
     isModalVisible, 
@@ -13,12 +15,15 @@ export default function MakeNewModal({
     origData,
     form, 
     setForm, 
-    isOpened
+    isOpened,
+    syncData
     }) {
 
     const [isLoading, setIsLoading] = useState(false);
     const [errorState, setErrorState] = useState<"default" | "primary" | "secondary" | "success" | "warning" | "error" | "gradient">("primary");
     const [saveButtonText, setSaveButtonText] = useState("Save");
+
+    const [settings, setSettings] = useState<ISettings>({} as ISettings);
 
     const textHandler = (e, name) => {
         let value = e.target.value;
@@ -104,6 +109,39 @@ export default function MakeNewModal({
         }
     }
 
+    const addItem = () => {
+        setIsLoading(true);
+        setSaveButtonText("Saving...");
+        
+        const newItem : Iitem = form;
+
+        // get date in format: 2023-02-12T22:36:08.346256+00:00
+        const date = new Date();
+        newItem.created_at = `${date.getFullYear()}-${dateMonth(date)}-${dateDay(date)}T${dateHours(date)}:${dateMinutes(date)}:${dateSeconds(date)}.${date.getMilliseconds()}+00:00`;
+        
+        newItem.deleted = false;
+        newItem.toUpdate = false;
+        
+        if(!newItem.hasDueDate) {
+            newItem.date = new Date("2100").getTime();
+        }
+
+        newItem.datemodified = new Date().getTime();
+
+        newItem.id = uuidGen();
+
+        console.log("New item:" , newItem);
+
+        setRows(prevState => [...prevState, newItem])
+        setOrigData(prevState => [...prevState, newItem])
+
+        console.log("OrigData in makenewmodal:", origData);
+
+        setIsLoading(false);
+        setModalVisible(false);
+        setSaveButtonText("Save");
+    }
+
     const deleteForm = async () => {
 
         const response = await fetch(`/api/delete`, {
@@ -166,7 +204,7 @@ export default function MakeNewModal({
             <Modal.Footer>
                 <Grid.Container gap={2} direction="row" justify="center">
                     <Grid>
-                        <Button color={errorState} onClick={(e) => {submitForm(); setIsLoading(true)}}>{renderButton}</Button>
+                        <Button color={errorState} onClick={(e) => {addItem(); setIsLoading(true)}}>{renderButton}</Button>
                     </Grid>
                     {isOpened ? (
                     <Grid>

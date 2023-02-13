@@ -1,10 +1,12 @@
 export default interface Iitem {
-    id?: number;
-    _id?: string;
+    id: string;
     name: string;
     place: string;
     count: number;
     hasDueDate: boolean;
-    date: string;
+    date: number;
     deleted: boolean;
+    created_at: string;
+    datemodified: number;
+    toUpdate: false;
 }

@@ -17,10 +17,10 @@ class MyDocument extends Document {
         {CssBaseline.flush()}
         <meta charSet="utf-8"/>
         <meta httpEquiv="X-UA-Compatible" content="IE=edge"/>
-        <meta name='application-name' content='Closed[in] Blog' />
+        <meta name='application-name' content='FoodTracker' />
         <meta name='apple-mobile-web-app-capable' content='yes' />
         <meta name='apple-mobile-web-app-status-bar-style' content='default' />
-        <meta name='apple-mobile-web-app-title' content='Closed[in] Blog' />
+        <meta name='apple-mobile-web-app-title' content='FoodTracker' />
         <meta name='description' content='Tech and Maths Blog' />
         <meta name='format-detection' content='telephone=no' />
         <meta name='mobile-web-app-capable' content='yes' />
@@ -42,14 +42,14 @@ class MyDocument extends Document {
             
         <meta name='twitter:card' content='summary' />
         <meta name='twitter:url' content='https://close-up-blog.vercel.app/' />
-        <meta name='twitter:title' content='Closed[in] Blog' />
+        <meta name='twitter:title' content='FoodTracker' />
         <meta name='twitter:description' content='Tech and Maths Blog ' />
         <meta name='twitter:image' content='https://close-up-blog.vercel.app/icons/android-chrome-192x192.png' />
         <meta name='twitter:creator' content='@Cr4yfish' />
         <meta property='og:type' content='website' />
-        <meta property='og:title' content='Closed[in] Blog' />
+        <meta property='og:title' content='FoodTracker' />
         <meta property='og:description' content='Tech and Maths Blog ' />
-        <meta property='og:site_name' content='Closed[in] Blog' />
+        <meta property='og:site_name' content='FoodTracker' />
         <meta property='og:url' content='https://close-up-blog.vercel.app' />
         <meta property='og:image' content='https://close-up-blog.vercel.app/icons/apple-touch-icon.png' />
         

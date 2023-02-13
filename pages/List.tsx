@@ -1,13 +1,14 @@
 import React from 'react'
 import { Button, Container, Card, Text, Modal, Input, Spacer, Dropdown, Collapse } from "@nextui-org/react";
 import { useState, useEffect } from "react";
-import { supabase, uuidGen, _DATABASE_NAME_PERSONS, _DATABASE_NAME_SHOPPING_LIST } from '@/functions/SupabaseClient';
+import { uuidGen, _DATABASE_NAME_PERSONS, _DATABASE_NAME_SHOPPING_LIST, getSupabaseClient } from '@/functions/SupabaseClient';
 
 import CustomNavbar from '@/components/CustomNavbar';
 import { dateDay, dateMinutes, dateMonth, dateHours, dateSeconds } from '@/functions/FormatTime';
 
 import IShoppingListItem from '@/interfaces/IShoppingListItem';
 import IPerson from '@/interfaces/IPerson';
+import ISettings from '@/interfaces/ISettings';
 
 import { FaAd, FaAmericanSignLanguageInterpreting, FaCheck, FaClock, FaPen, FaPlus, FaRecycle, FaRegArrowAltCircleRight, FaTrash } from 'react-icons/fa';
 import { MdRotateLeft } from "react-icons/md"
@@ -20,6 +21,8 @@ export default function List() {
     const [dropdownSelected, setDropdownSelected] = useState<any>(new Set(["Set support by"]));
     const [editMode, setEditMode] = useState<boolean>(false);
     const [personRows, setPersonRows] = useState<Array<IPerson>>([]);
+    const [isOnline, setIsOnline] = useState<boolean>(false);
+    const [settings, setSettings] = useState<ISettings>({} as ISettings);
 
     // SYNC ON STARTUP
     useEffect(() => {
@@ -38,6 +41,27 @@ export default function List() {
     */
     const sync = async () => {
         console.log("Syncing");
+
+        console.log("Getting settings");
+        const settingsResponse = localStorage.getItem("settings");
+        if(settingsResponse) {
+            setSettings(JSON.parse(settingsResponse));
+            console.log("Got settings", settings);
+        } else {
+            console.log("No settings found");
+            setIsOnline(false)
+            return;
+        }
+
+        console.log("Getting supabase client");
+        const supabase = getSupabaseClient(settings.supabaseUrl, settings.supabaseKey);
+
+        if(!supabase) { 
+            console.log("No supabase client found");
+            setIsOnline(false);
+            return;
+        }
+
         const { data: updatedData, error } = await supabase.from(_DATABASE_NAME_SHOPPING_LIST).upsert(origData).select()
         console.log("Upserted Data from supabase:", updatedData, error);
 
@@ -52,8 +76,9 @@ export default function List() {
         const { data: persons, error: err2 } = await supabase.from(_DATABASE_NAME_PERSONS).select('*')
         console.log("Persons from supabase:", persons, err2);
         setPersonRows(persons);
-
+        setIsOnline(true);
         console.log("Synced");
+        
     }
 
     const addItemHandler = () => {
@@ -185,7 +210,7 @@ export default function List() {
                     <Button auto color="success" flat onClick={() => addItemHandler()}>Add</Button>
                 </Modal.Footer>
             </Modal>
-            <CustomNavbar current="List" />
+            <CustomNavbar current="List" online={isOnline} />
             <Button auto color="secondary" style={{ 
                     position: "absolute", 
                     bottom: "2rem", 

@@ -5,10 +5,12 @@ import { useState, useEffect } from "react";
 import TableSection from '../components/TableSection';
 import MakeNewModal from '../components/MakeNewModal';
 import CalculateNextDue from '../functions/CalculateNextDue';
+import { getSupabaseClient, _DATABASE_NAME_ITEMS, uuidGen } from '@/functions/SupabaseClient';
 import CustomNavbar from '@/components/CustomNavbar';
 
 // Interfaces
 import Iitem from '../interfaces/Iitem';
+import ISettings from '@/interfaces/ISettings';
 
 const Home = ({ }) => {
 
@@ -21,6 +23,10 @@ const Home = ({ }) => {
   const [isOpened, setIsOpened] = useState<Boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<Boolean>(false);
 
+  const [settings, setSettings] = useState<ISettings>({} as ISettings);
+
+  const [isOnline, setIsOnline] = useState<boolean>(false);
+
   const getTimeDiffInDays = (date : number) => {
     const now = new Date().getTime();
 
@@ -32,27 +38,27 @@ const Home = ({ }) => {
 
     if(diffDays > 10000) {
       return (
-        <Button onClick={() => handleClick(nextDue?._id)} flat color="success">
+        <Button onClick={() => handleClick(nextDue?.id)} flat color="success">
           Has no due date
         </Button>
       )
     }
     if(diffDays > 0) {
       return (
-        <Button onClick={() => handleClick(nextDue?._id)} flat color="success">
+        <Button onClick={() => handleClick(nextDue?.id)} flat color="success">
           {`In ${diffDays} ${mod}`}
         </Button>
       )
     } else if(diffDays === 0) {
       // due today
       return (
-        <Button onClick={() => handleClick(nextDue?._id)} flat color="warning">
+        <Button onClick={() => handleClick(nextDue?.id)} flat color="warning">
           {`Due today`}
         </Button>
       )
     } else {
       return (
-        <Button onClick={() => handleClick(nextDue?._id)} flat color="warning">
+        <Button onClick={() => handleClick(nextDue?.id)} flat color="warning">
           {`Overdue since ${days} ${mod}`}
         </Button>
       )
@@ -61,7 +67,7 @@ const Home = ({ }) => {
 
   const handleClick = (key : any) => {
     console.log(key)
-    let element = origData?.find((ele : Iitem) => ele._id == key);
+    let element = origData?.find((ele : Iitem) => ele.id == key);
     if(element === undefined) {
       console.log("Element not found");
       element = {} as Iitem;
@@ -86,7 +92,9 @@ const Home = ({ }) => {
 
   // fetch data on load
   useEffect(() => {
-    fetchData();
+    if(window !== undefined) {
+      sync();
+    }
   }, []);
 
   const renderNextDue = origData?.length && origData.length > 0 ? (
@@ -96,31 +104,47 @@ const Home = ({ }) => {
         <span>Next due</span>
         <h2>{nextDue?.name}</h2>
         <Tooltip content={nextDue?.date} placement="bottom" color="success">
-            {getTimeDiffInDays(parseInt(nextDue?.date ? nextDue.date : "0"))}
+            {getTimeDiffInDays(nextDue?.date ? nextDue.date : 0)}
         </Tooltip>
       </Card.Body>
     </Card>
   </Grid>
   ) : null
 
-  const fetchData = async () => {
-    console.log("fetching data");
-    const response = await fetch(`api/get/`);
-    let data = await response.json();
-    console.log("Got data:", data);
-  
-    // filter out deleted items
-    data = data.filter((ele : Iitem) => (ele.deleted === null));
+  const sync = async () => {
+    console.log("Syncing data");
 
-    if(data.length > 0) {
-    
-    // set init values
-    setOrigData(data);
-    setRows(data);
-    setNextDue(CalculateNextDue(data));
+    console.log("Getting settings");
+    const settingsResponse = localStorage.getItem("settings");
+    if(settingsResponse) {
+      setSettings(JSON.parse(settingsResponse));
     } else {
-      setOrigData([]);
-      setRows([]);
+      console.log("No settings found");
+      return;
+    }
+
+    const supabase = getSupabaseClient(settings.supabaseUrl, settings.supabaseKey);
+
+    if(!supabase) { 
+      console.log("No supabase client found");
+      setIsOnline(false);
+      return;
+    }
+
+    console.log("OrigData:" , origData);
+
+    const { data: updatedData, error } = await supabase.from(_DATABASE_NAME_ITEMS).upsert(origData).select()
+    console.log("Upserted Data from supabase:", updatedData, error);
+
+    const { data: newItems, error: err } = await supabase.from(_DATABASE_NAME_ITEMS).select('*')
+    console.log("new items from supabase:", newItems, err);
+
+    if(newItems) {
+      setOrigData(newItems);
+      const noDeleted = newItems.filter((ele : Iitem) => (ele.deleted === false));
+      setRows(noDeleted);
+      setNextDue(CalculateNextDue(newItems));
+      setIsOnline(true);
     }
   }
 
@@ -133,7 +157,7 @@ const Home = ({ }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
       </Head>
       <Container>
-        <CustomNavbar current="Home" />
+        <CustomNavbar current="Home" online={isOnline} />
 
         <MakeNewModal 
           isModalVisible={isModalVisible} 
@@ -144,6 +168,7 @@ const Home = ({ }) => {
           setForm={setForm}
           form={form}
           isOpened={isOpened}
+          syncData={sync}
         />
 
         <Grid.Container gap={2} justify="center" direction='column'>
@@ -159,6 +184,10 @@ const Home = ({ }) => {
                 }} >
                 <FaPlusSquare style={{ marginRight:"5px"}} /> Add
               </Button>
+              <Button
+                auto
+                onPress={() => sync()}
+              >Refresh</Button>
             </Grid>
           </Grid.Container>
 

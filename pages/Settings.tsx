@@ -2,7 +2,7 @@ import { Container, Button, Card, Text, Modal, Input, Spacer } from "@nextui-org
 import { useState, useEffect } from "react"
 
 import CustomNavbar from "@/components/CustomNavbar"
-import { supabase, uuidGen, _DATABASE_NAME_PERSONS } from "@/functions/SupabaseClient"
+import { uuidGen, _DATABASE_NAME_PERSONS, getSupabaseClient } from "@/functions/SupabaseClient"
 import { dateDay, dateHours, dateMinutes, dateMonth, dateSeconds } from "@/functions/FormatTime"
 
 import ISettings from "@/interfaces/ISettings"
@@ -14,8 +14,10 @@ export default function Settings() {
     const [personsRows, setPersonsRows] = useState<Array<IPerson>>([])
     const [form, setForm] = useState<IPerson>({} as IPerson)
     const [modal, setModal] = useState<boolean>(false)
+    const [isOnline, setIsOnline] = useState<boolean>(false)
     
     useEffect(() => {
+        readSettings();
         syncPersons();
     }, [])
 
@@ -45,14 +47,27 @@ export default function Settings() {
     }
 
     const syncPersons = async () => {
-        console.log("Syncing persons...")
+        console.log("Syncing persons...", settings)
+        const supabase = getSupabaseClient(settings.supabaseUrl, settings.supabaseKey);
 
-        const { data: updatedData, error } = await supabase.from(_DATABASE_NAME_PERSONS).upsert(personsRows).select()
-        console.log("Updated data: ", updatedData, error);
+        if(!supabase) {
+            console.log("No supabase client")
+            setIsOnline(false);
+            return;
+        }
 
-        const { data: persons, error: err } = await supabase.from(_DATABASE_NAME_PERSONS).select('*')
-        console.log("Persons list from supabase:", persons, err);
-        setPersonsRows(persons);
+        try {
+            const { data: updatedData, error } = await supabase.from(_DATABASE_NAME_PERSONS).upsert(personsRows).select()
+            console.log("Updated data: ", updatedData, error);
+
+            const { data: persons, error: err } = await supabase.from(_DATABASE_NAME_PERSONS).select('*')
+            console.log("Persons list from supabase:", persons, err);
+            setPersonsRows(persons);
+            setIsOnline(true);
+        } catch (e) {
+            console.log("Error syncing persons: ", e);
+            setIsOnline(false);
+        }
         
     }
 
@@ -76,14 +91,31 @@ export default function Settings() {
         console.log("opened");
     }
 
+    const saveSettings = () => {
+        console.log("saveSettings", settings)
+        localStorage.setItem("settings", JSON.stringify(settings))
+        setOriginalSettings(settings)
+    }
+
+    const resetSettings = () => {
+        console.log("resetSettings")
+        localStorage.setItem("settings", JSON.stringify(originalSettings))
+        setSettings(originalSettings)
+    }
+
+    const readSettings = () => {
+        console.log("readSettings")
+        const newSettings = localStorage.getItem("settings")
+        console.log("Read settings:", newSettings)
+        if (newSettings) {
+            setOriginalSettings(JSON.parse(newSettings) as ISettings)
+            setSettings(JSON.parse(newSettings) as ISettings)
+        }
+    }
+
     return (
         <Container>
-            <CustomNavbar current="Settings" />
-            <Container style={{ display: "flex", flexDirection: "row", flexWrap: "nowrap", gap: ".5rem", marginTop: "1rem" }} >
-                <Button color="success" auto style={{ margin: "0" }} onPress={() => openHandler()}>Add</Button>
-                <Button color="secondary" auto style={{ margin: "0" }} onPress={() => syncPersons()}>Sync</Button>  
-            </Container>
-            
+            <CustomNavbar current="Settings" online={isOnline} />
             
             <Modal
                 closeButton
@@ -101,6 +133,32 @@ export default function Settings() {
                     <Button auto color="success" onClick={() => addPerson()}>Save</Button>
                 </Modal.Footer>
             </Modal>
+
+            <Text h2>Settings</Text>
+
+            <Container style={{ display: "flex", flexDirection: "row", flexWrap: "nowrap", gap: ".5rem", marginTop: "1rem" }} >
+                <Button color="success" auto style={{ margin: "0" }} onPress={() => saveSettings()}>Save</Button>
+                <Button color="secondary" auto style={{ margin: "0" }} onPress={() => readSettings()}>Refresh</Button>
+                <Button color="error" auto style={{ margin: "0" }} onPress={() => resetSettings()}>Reset</Button>
+            </Container>
+
+            <Container style={{ display: "flex", flexDirection: "column", gap: ".5rem", marginTop: "1rem" }} >
+                <Spacer y={0.5} />
+                <Input onChange={(e) => setSettings(prevState => ({...prevState, ["ip"]: e.target.value}))} value={settings.ip} labelPlaceholder="IP" clearable underlined type="text" initialValue={settings?.ip} />
+                <Spacer y={0.75} />
+                <Input onChange={(e) => setSettings(prevState => ({...prevState, ["port"]: e.target.value}))} value={settings.port} labelPlaceholder="Port" clearable underlined type="text" initialValue={settings?.port} />
+                <Spacer y={0.75} />
+                <Input onChange={(e) => setSettings(prevState => ({...prevState, ["supabaseUrl"]: e.target.value}))} value={settings.supabaseUrl} labelPlaceholder="Supabase URL" clearable underlined type="text" initialValue={settings?.supabaseUrl} />
+                <Spacer y={0.75} />
+                <Input onChange={(e) => setSettings(prevState => ({...prevState, ["supabaseKey"]: e.target.value}))} value={settings.supabaseKey} labelPlaceholder="Supabase Key" clearable underlined type="text" initialValue={settings?.supabaseKey} />
+            </Container>
+
+            <Text h2>Persons</Text>
+
+            <Container style={{ display: "flex", flexDirection: "row", flexWrap: "nowrap", gap: ".5rem", marginTop: "1rem" }} >
+                <Button color="success" auto style={{ margin: "0" }} onPress={() => openHandler()}>Add</Button>
+                <Button color="secondary" auto style={{ margin: "0" }} onPress={() => syncPersons()}>Sync</Button>  
+            </Container>
 
             <Container style={{ display: "flex", flexDirection: "column", gap: ".5rem", marginTop: "1rem" }} >
                 {personsRows.map((person) => {
