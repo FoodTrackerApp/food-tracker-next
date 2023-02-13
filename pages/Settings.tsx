@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import CustomNavbar from "@/components/CustomNavbar"
 import { uuidGen, _DATABASE_NAME_PERSONS, getSupabaseClient } from "@/functions/SupabaseClient"
 import { dateDay, dateHours, dateMinutes, dateMonth, dateSeconds } from "@/functions/FormatTime"
+import { readSettings } from "@/functions/Settings"
 
 import ISettings from "@/interfaces/ISettings"
 import IPerson from "@/interfaces/IPerson"
@@ -17,8 +18,11 @@ export default function Settings() {
     const [isOnline, setIsOnline] = useState<boolean>(false)
     
     useEffect(() => {
-        readSettings();
-        syncPersons();
+        (async () => {
+            await readSettings();
+            await setNewSettings();
+            syncPersons();
+        })();
     }, [])
 
     const addPerson = () => {
@@ -48,7 +52,9 @@ export default function Settings() {
 
     const syncPersons = async () => {
         console.log("Syncing persons...", settings)
-        const supabase = getSupabaseClient(settings.supabaseUrl, settings.supabaseKey);
+        const settingsReponse = await readSettings();
+
+        const supabase = getSupabaseClient(settingsReponse.supabaseUrl, settingsReponse.supabaseKey);
 
         if(!supabase) {
             console.log("No supabase client")
@@ -103,14 +109,10 @@ export default function Settings() {
         setSettings(originalSettings)
     }
 
-    const readSettings = () => {
-        console.log("readSettings")
-        const newSettings = localStorage.getItem("settings")
-        console.log("Read settings:", newSettings)
-        if (newSettings) {
-            setOriginalSettings(JSON.parse(newSettings) as ISettings)
-            setSettings(JSON.parse(newSettings) as ISettings)
-        }
+    const setNewSettings = async () => {
+        const newSettings : ISettings = await readSettings();
+        setOriginalSettings(newSettings)
+        setSettings(newSettings)
     }
 
     return (
@@ -138,7 +140,7 @@ export default function Settings() {
 
             <Container style={{ display: "flex", flexDirection: "row", flexWrap: "nowrap", gap: ".5rem", marginTop: "1rem" }} >
                 <Button color="success" auto style={{ margin: "0" }} onPress={() => saveSettings()}>Save</Button>
-                <Button color="secondary" auto style={{ margin: "0" }} onPress={() => readSettings()}>Refresh</Button>
+                <Button color="secondary" auto style={{ margin: "0" }} onPress={() => setNewSettings()}>Refresh</Button>
                 <Button color="error" auto style={{ margin: "0" }} onPress={() => resetSettings()}>Reset</Button>
             </Container>
 

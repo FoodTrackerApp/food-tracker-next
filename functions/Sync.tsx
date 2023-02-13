@@ -1,8 +1,10 @@
 import { getSupabaseClient, _DATABASE_NAME_ITEMS, _DATABASE_NAME_SHOPPING_LIST, _DATABASE_NAME_PERSONS } from "./SupabaseClient";
 import CalculateNextDue from "./CalculateNextDue";
+import { readSettings } from "./Settings";
 
 import Iitem from "@/interfaces/Iitem";
 import IShoppingListItem from "@/interfaces/IShoppingListItem";
+import ISettings from "@/interfaces/ISettings";
 
 /**
  * @description Syncs the items with the database
@@ -15,43 +17,43 @@ async function SyncItems({
     setRows, setNextDue, 
     setIsOnline, setCleanData
     }) {
+    return new Promise(async (resolve, reject) => {
 
-    console.log("Syncing data");
+      console.log("Syncing data");
 
-    console.log("Getting settings");
-    const settingsResponse = localStorage.getItem("settings");
-    if(settingsResponse) {
-      setSettings(JSON.parse(settingsResponse));
-    } else {
-      console.log("No settings found");
-      return;
-    }
+      console.log("Getting settings");
 
-    const supabase = getSupabaseClient(settings.supabaseUrl, settings.supabaseKey);
+      const settings : ISettings = await readSettings();
+      console.log("Got settings", settings);
 
-    if(!supabase) { 
-      console.log("No supabase client found");
-      setIsOnline(false);
-      return;
-    }
+      const supabase = getSupabaseClient(settings.supabaseUrl, settings.supabaseKey);
 
-    console.log("OrigData:" , origData);
+      if(!supabase) { 
+        console.log("No supabase client found");
+        setIsOnline(false);
+        reject("No supabase client found");
+        return;
+      }
 
-    const { data: updatedData, error } = await supabase.from(_DATABASE_NAME_ITEMS).upsert(origData).select()
-    console.log("Upserted Data from supabase:", updatedData, error);
+      console.log("OrigData:" , origData);
 
-    const { data: newItems, error: err } = await supabase.from(_DATABASE_NAME_ITEMS).select('*')
-    console.log("new items from supabase:", newItems, err);
+      const { data: updatedData, error } = await supabase.from(_DATABASE_NAME_ITEMS).upsert(origData).select()
+      console.log("Upserted Data from supabase:", updatedData, error);
 
-    if(newItems) {
-      setOrigData(newItems);
-      const noDeleted = newItems.filter((ele : Iitem) => (ele.deleted === false));
-      setRows(noDeleted);
-      setCleanData(noDeleted);
-      console.log("Rows:", noDeleted)
-      setNextDue(CalculateNextDue(newItems));
-      setIsOnline(true);
-    }
+      const { data: newItems, error: err } = await supabase.from(_DATABASE_NAME_ITEMS).select('*')
+      console.log("new items from supabase:", newItems, err);
+
+      if(newItems) {
+        setOrigData(newItems);
+        const noDeleted = newItems.filter((ele : Iitem) => (ele.deleted === false));
+        setRows(noDeleted);
+        setCleanData(noDeleted);
+        console.log("Rows:", noDeleted)
+        setNextDue(CalculateNextDue(newItems));
+        setIsOnline(true);
+        resolve("Success");
+      }
+  });
 }
 
 /**
@@ -69,18 +71,11 @@ async function SyncList({
   console.log("Syncing");
 
   console.log("Getting settings");
-  const settingsResponse = localStorage.getItem("settings");
-  if(settingsResponse) {
-      setSettings(JSON.parse(settingsResponse));
-      console.log("Got settings", settings);
-  } else {
-      console.log("No settings found");
-      setIsOnline(false)
-      return;
-  }
+  const settingsResponse : ISettings = await readSettings();
+  setSettings(settingsResponse);
 
   console.log("Getting supabase client");
-  const supabase = getSupabaseClient(settings.supabaseUrl, settings.supabaseKey);
+  const supabase = getSupabaseClient(settingsResponse.supabaseUrl, settingsResponse.supabaseKey);
 
   if(!supabase) { 
       console.log("No supabase client found");

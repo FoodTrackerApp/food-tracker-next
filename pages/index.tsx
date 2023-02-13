@@ -61,13 +61,28 @@ const Home = ({ }) => {
 
   // fetch data on load
   useEffect(() => {
+    console.log("onload")
     if(window !== undefined) {
-      sync()
+      (async() => {
+        try {
+          await sync();
+        } catch(e) {
+          console.error(e);
+        }
+      })();
     }
   }, []);
 
   const sync = () => {
-    SyncItems({ settings, setSettings, origData, setOrigData, setRows, setNextDue, setIsOnline, setCleanData});
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await SyncItems({ settings, setSettings, origData, setOrigData, setRows, setNextDue, setIsOnline, setCleanData});
+        resolve(res);
+      } catch(e) {
+        reject(e)
+      }
+    })
+
   }
 
   return (

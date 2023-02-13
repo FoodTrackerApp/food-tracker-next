@@ -30,6 +30,7 @@ export default function MakeNewModal({
 
     useEffect(() => {
         if(!isModalVisible) {
+            console.log("Calling syncData() from makemodal")
             syncData();
         }
     }, [isModalVisible])
