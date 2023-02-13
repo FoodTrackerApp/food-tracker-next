@@ -9,6 +9,7 @@ For the App integration, go to [FoodTrackerApp]
 - Counter
 - Sorted Table
 - Next Due notifier
+- A shopping list
 
 ## Tech
 
@@ -17,6 +18,7 @@ FoodTracker next uses these technologies:
 - [Next]
 - [React]
 - [nedb]
+- [supabase]
 
 ## Installation
 
@@ -55,7 +57,6 @@ Then
 npm run start
 ```
 
-
 ### 4. (optional) Set up pm2
 
 Stop the running instance
@@ -74,10 +75,7 @@ pm2 start foodTracker
 ```
 
 ## Known Issues
-~~- When editing an item without changing the date, the date gets corrupted in the frontend and undefined behaviour will commence
-Workaround: Always change the date when editing an item (using the same date works as well).~~
 
-This has been fixed.
 
 ## Development
 
@@ -91,4 +89,5 @@ const host = "http://localhost:30010";
 [react]: <https://reactjs.org//>
 [nedb]: <https://github.com/seald/nedb>
 [pm2]: <https://pm2.keymetrics.io/>
-[FoodTrackerApp]: https://github.com/cr4yfish/foodTrackerApp
+[FoodTrackerApp]: <https://github.com/cr4yfish/foodTrackerApp>
+[supabase]: <https://supabase.io/>

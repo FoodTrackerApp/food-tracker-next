@@ -1,13 +1,14 @@
 import React from 'react'
 import { Button, Container, Card, Text, Modal, Input, Spacer, Dropdown, Collapse } from "@nextui-org/react";
 import { useState, useEffect } from "react";
-import { createClient } from '@supabase/supabase-js';
-import { v4 } from "uuid";
+import { supabase, uuidGen, _DATABASE_NAME_PERSONS, _DATABASE_NAME_SHOPPING_LIST } from '@/functions/SupabaseClient';
 
 import CustomNavbar from '@/components/CustomNavbar';
 import { dateDay, dateMinutes, dateMonth, dateHours, dateSeconds } from '@/functions/FormatTime';
 
 import IShoppingListItem from '@/interfaces/IShoppingListItem';
+import IPerson from '@/interfaces/IPerson';
+
 import { FaAd, FaAmericanSignLanguageInterpreting, FaCheck, FaClock, FaPen, FaPlus, FaRecycle, FaRegArrowAltCircleRight, FaTrash } from 'react-icons/fa';
 import { MdRotateLeft } from "react-icons/md"
 
@@ -18,12 +19,7 @@ export default function List() {
     const [form, setForm] = useState<IShoppingListItem>({} as IShoppingListItem);
     const [dropdownSelected, setDropdownSelected] = useState<any>(new Set(["Set support by"]));
     const [editMode, setEditMode] = useState<boolean>(false);
-
-    const supabaseUrl = 'https://rfwwdmxbcwcginiojagw.supabase.co'
-    const supabaseKey = process.env.NEXT_PUBLIC_DB_KEY;
-    const supabase = createClient(supabaseUrl, supabaseKey)
-
-    const _DATABASE_NAME = "shoppingList";
+    const [personRows, setPersonRows] = useState<Array<IPerson>>([]);
 
     // SYNC ON STARTUP
     useEffect(() => {
@@ -42,21 +38,27 @@ export default function List() {
     */
     const sync = async () => {
         console.log("Syncing");
-        const { data: updatedData, error } = await supabase.from(_DATABASE_NAME).upsert(origData).select()
+        const { data: updatedData, error } = await supabase.from(_DATABASE_NAME_SHOPPING_LIST).upsert(origData).select()
         console.log("Upserted Data from supabase:", updatedData, error);
 
-        const { data: shoppingList, error: err } = await supabase.from(_DATABASE_NAME).select('*')
+        const { data: shoppingList, error: err } = await supabase.from(_DATABASE_NAME_SHOPPING_LIST).select('*')
         console.log("Shopping list from supabase:", shoppingList, err);
+
         if(shoppingList) {
             setOrigData(shoppingList);
             filterData();
         }
+
+        const { data: persons, error: err2 } = await supabase.from(_DATABASE_NAME_PERSONS).select('*')
+        console.log("Persons from supabase:", persons, err2);
+        setPersonRows(persons);
+
         console.log("Synced");
     }
 
     const addItemHandler = () => {
         const newItem = {} as IShoppingListItem;
-        newItem.id = v4();
+        newItem.id = uuidGen();
         newItem.name = form.name;
         newItem.count = form.count;
         newItem.supportedBy = selectedValue;
@@ -171,9 +173,9 @@ export default function List() {
                             disallowEmptySelection
                             onSelectionChange={setDropdownSelected}
                         >
-                            <Dropdown.Item key="manuel">Manuel</Dropdown.Item>
-                            <Dropdown.Item key="hannes">Hannes</Dropdown.Item>
-                            <Dropdown.Item key="aitor">Aitor</Dropdown.Item>
+                            {personRows?.map((person) => {
+                                return <Dropdown.Item key={person.name}>{person.name}</Dropdown.Item>
+                            })}
                         </Dropdown.Menu>
                     </Dropdown>
                     <Spacer  y={.25} />
