@@ -1,7 +1,8 @@
 # Food Tracker (next)
-FoodTracker is a (partly) locally hosted Web App that can Track Food Items
+FoodTracker is a cloud-based Web App that can Track Food Items
 
 For the App integration, go to [FoodTrackerApp]
+(Note: The App Integration is currently non-functional until the remake is completed)
 
 ## Features
 
@@ -43,18 +44,6 @@ To use the shopping list, you will need to set-up 2 tables in a supabase databas
 
 The table specs can be seen in @interfaces/IShoppingListItem and @interfaces/IPerson.
 
-After that, you just need to make a local env like this:
-```sh
-touch .env.local
-```
-Then, put this in there with the editor of your choice:
-```env
-NEXT_PUBLIC_DB_KEY="[your api key from supabase]"
-```
-If you're unsure where to find the API key, go to the supabase API docs.
-
-(Note: This will change in near future with coming security improvements)
-
 ### 3. Build and start the Server
 
 In the food-tracker-next/ directory
@@ -67,25 +56,12 @@ Then
 npm run start
 ```
 
-### 4. (optional) Set up pm2
-
-Stop the running instance
-```sh
-[ctrl+c]
-```
-- Install [pm2]
-```sh
-npm install pm2 -g
-```
-- Add food-tracker-next to pm2
-```sh
-pm2 start npm --name foodTracker -- start
-pm2 save
-pm2 start foodTracker
-```
+### 4. Configure the settings
+Open the webapp and go to the Settings tab.
+There, you will need to fill out the Supabase URL and key to be able to connect to your database.
 
 ## Known Issues
-
+- The App Integration is currently non-functional
 
 ## Development
 
